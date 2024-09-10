@@ -7,7 +7,7 @@ const String url = 'http://192.168.181.183:8000';
 Future<bool> login(String username, String password) async {
   try {
     final response = await http.post(
-      Uri.parse('$url/auth'),
+      Uri.parse('$url/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'username': username,
@@ -38,7 +38,7 @@ Future<bool> login(String username, String password) async {
 Future<bool> register(String username, String password) async {
   try {
     final response = await http.post(
-      Uri.parse('$url/register'),
+      Uri.parse('$url/auth/register'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'username': username,
@@ -78,7 +78,7 @@ Future<bool> validateToken() async {
 
   try {
     final response = await http.get(
-      Uri.parse('$url/validate-token/'),
+      Uri.parse('$url/auth/validate-token/'),
       headers: {
         'Authorization': 'Token $token',
         'Content-Type': 'application/json',

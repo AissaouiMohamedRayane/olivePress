@@ -1,8 +1,8 @@
-from typing import Any
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
+from django.core.validators import RegexValidator
 
 
 
@@ -27,6 +27,14 @@ class CustomAccountManager (BaseUserManager):
 class NewUser (AbstractBaseUser, PermissionsMixin):
     username = models.CharField(_("username"), max_length=50, unique=True)
     date_joined = models.DateField(default=timezone.now)
+    phone = models.CharField(
+        _("phone number"),
+        max_length=10,
+        blank=True,
+        validators=[RegexValidator(r'^\d{10}$', _('Phone number must be exactly 10 digits'))]
+    )
+    
+    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     

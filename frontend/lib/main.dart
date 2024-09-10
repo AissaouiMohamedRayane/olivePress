@@ -3,9 +3,21 @@ import 'package:frontend/services/API/auth.dart';
 import './screens/home.dart';
 import 'screens/authPages/loginPage.dart';
 import 'screens/authPages/register.dart';
+import 'package:provider/provider.dart';
+import './services/models/Company.dart';
+import 'screens/addCompanyPage.dart';
+import './services/models/Token.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CompanyProvider()),
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/register': (context) => RegisterPage(),
         '/login': (context) => LoginPage(),
+        '/addCompany': (context) => AddCompanyPage(),
       },
       home: SplashScreen(), // Start with the splash screen
     );
@@ -46,7 +59,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> checkLoginStatus() async {
     // Try to get the token from shared preferences
     bool? ress = await validateToken();
-
     if (ress) {
       // If the token is found, navigate to the HomePage
       Navigator.pushReplacementNamed(context, '/home');

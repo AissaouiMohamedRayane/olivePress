@@ -4,9 +4,9 @@ import '../models/Company.dart';
 
 const String url = 'http://192.168.181.183:8000';
 
-Future<Company?> getCompany(String? token) async {
+Future<Map<String, dynamic>> getCompany(String? token) async {
   if (token == null) {
-    return null;
+    return {'company': null, 'message': 'you do not have the token'};
   }
   try {
     final response = await http.get(
@@ -21,21 +21,22 @@ Future<Company?> getCompany(String? token) async {
       // The login was successful
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (responseData['exists'] == false) {
-        return null;
+        return {'company': null, 'message': 'company does not exist'};
       }
       final Company company = Company.fromJson(responseData['company']);
 
       // Save the token for future API requests (e.g., using shared_preferences)
-      return company;
-    } else {
+      return {'company': company, 'message': 'success'};
+    } else if (response.statusCode == 401) {
       // The login failed
       print('fetching company failed with status: ${response.statusCode}');
       print('Error: ${response.body}');
-      return null;
+      return {'company': null, 'message': 'you are not an active user'};
     }
+    return {'company': null, 'error': true, 'message': 'network errour'};
   } catch (e) {
     print('An error occurred: $e');
-    return null;
+    return {'company': null};
   }
 }
 

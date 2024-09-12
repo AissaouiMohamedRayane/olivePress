@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import '../../services/API/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,38 +16,6 @@ class _LoginPageState extends State<LoginPage> {
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
 
-  String _usernameLabelText = 'Entrer le username';
-  String _passwordLabelText = 'Entrer le password';
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Listen for focus changes
-    _usernameFocusNode.addListener(() {
-      if (_usernameFocusNode.hasFocus) {
-        setState(() {
-          _usernameLabelText = '';
-        });
-      } else {
-        setState(() {
-          _usernameLabelText = username == null ? 'Entrer le username' : '';
-        });
-      }
-    });
-    _passwordFocusNode.addListener(() {
-      if (_passwordFocusNode.hasFocus) {
-        setState(() {
-          _passwordLabelText = '';
-        });
-      } else {
-        setState(() {
-          _passwordLabelText = password == null ? 'Entrer le password' : '';
-        });
-      }
-    });
-  }
-
   @override
   void dispose() {
     _usernameFocusNode.dispose();
@@ -57,237 +24,239 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: <Widget>[
-            const SizedBox(
-              height: 160,
-            ),
-            Center(
-              child: Text(
-                'Login',
-                style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.start, // Align children at the start
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      'Username',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    TextFormField(
-                      focusNode:
-                          _usernameFocusNode, // Attach the FocusNode here
+    return Scaffold(body: Builder(builder: (context) {
+      // Get the height of the screen
+      final double screenHeight = MediaQuery.of(context).size.height;
 
-                      keyboardType: TextInputType.text,
-                      validator: (value) =>
-                          value!.isEmpty ? 'Veuillez entrer le username' : null,
-                      cursorColor: const Color(0xFF757575),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: InputDecoration(
-                        labelText: _usernameLabelText,
-                        labelStyle: const TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF757575)),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 20,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color(0xFF757575),
-                            ),
-                            borderRadius: BorderRadius.circular(10)),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.green,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onChanged: (value) {
-                        if (value == "") {
-                          username = null;
-                        } else {
-                          username = value;
-                        }
-                      },
-                      onSaved: (value) => username = value,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      'Password',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF757575)),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    TextFormField(
-                      obscureText: _obscurePassword, // Hide password text
-                      focusNode: _passwordFocusNode,
-                      keyboardType: TextInputType.text,
-                      validator: (value) =>
-                          value!.isEmpty ? 'Veuillez entrer le password' : null,
-                      cursorColor: const Color(0xFF757575),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: InputDecoration(
-                        labelText: _passwordLabelText,
-                        suffixIcon: _passwordFocusNode.hasFocus
-                            ? IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              )
-                            : null,
-                        labelStyle: const TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF757575)),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 20,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color(0xFF757575),
-                            ),
-                            borderRadius: BorderRadius.circular(10)),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.green,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onChanged: (value) {
-                        if (value == "") {
-                          password = null;
-                        } else {
-                          password = value;
-                        }
-                      },
-                      onSaved: (value) => password = value,
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _submitForm,
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(
-                            Colors.green,
-                          ),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              // Border width
-                            ),
-                          ),
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.symmetric(
-                                vertical: 12.0), // Add padding
-                          ),
-                        ),
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    const Center(
-                      child: Text(
-                        "vous n'avez pas de comte?",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF757575)),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/register');
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all<Color>(
-                            Colors.white,
-                          ),
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.symmetric(
-                                vertical: 12.0), // Add padding
-                          ),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: const BorderSide(
-                                    width: 1, color: Color(0xFF757575))
-                                // Border width
-                                ),
-                          ),
-                        ),
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ))
-          ],
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 209, 248, 119),
+              Color.fromARGB(255, 106, 190, 83)
+            ],
+            stops: [0, .9], // Adjust stops to control gradient spread
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-      ),
-    ));
+        // Set the minimum height to the screen height
+        constraints: BoxConstraints(
+          minHeight: screenHeight,
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(
+                  height: 160,
+                ),
+                const Center(
+                  child: Text(
+                    'Login in to your account',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 45,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 50,
+                ),
+                Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment
+                          .start, // Align children at the start
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextFormField(
+                          textAlign: TextAlign.center, // Center the hint text
+
+                          focusNode:
+                              _usernameFocusNode, // Attach the FocusNode here
+
+                          keyboardType: TextInputType.text,
+                          validator: (value) => value!.isEmpty
+                              ? 'Veuillez entrer le username'
+                              : null,
+                          cursorColor: const Color(0xFF757575),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(vertical: 5),
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 106, 190, 83),
+                            hintText: 'Username',
+                            hintStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                ),
+                                borderRadius: BorderRadius.circular(30)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                ),
+                                borderRadius: BorderRadius.circular(30)),
+                          ),
+                          onChanged: (value) {
+                            if (value == "") {
+                              username = null;
+                            } else {
+                              username = value;
+                            }
+                          },
+                          onSaved: (value) => username = value,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          textAlign: TextAlign.center, // Center the hint text
+
+                          obscureText: _obscurePassword, // Hide password text
+                          focusNode: _passwordFocusNode,
+                          keyboardType: TextInputType.text,
+                          validator: (value) => value!.isEmpty
+                              ? 'Veuillez entrer le password'
+                              : null,
+                          cursorColor: const Color(0xFF757575),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          decoration: InputDecoration(
+                            suffixIcon: _passwordFocusNode.hasFocus
+                                ? IconButton(
+                                    icon: Icon(
+                                      color: Colors
+                                          .white, // Set the icon color to white
+
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  )
+                                : null,
+                            contentPadding: EdgeInsets.only(
+                                top: 5,
+                                bottom: 5,
+                                left: _passwordFocusNode.hasFocus ? 48 : 0,
+                                right: 0),
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 106, 190, 83),
+                            hintText: 'Password',
+                            hintStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                ),
+                                borderRadius: BorderRadius.circular(30)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                ),
+                                borderRadius: BorderRadius.circular(30)),
+                          ),
+                          onChanged: (value) {
+                            if (value == "") {
+                              password = null;
+                            } else {
+                              password = value;
+                            }
+                          },
+                          onSaved: (value) => password = value,
+                        ),
+                        const SizedBox(height: 25),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _submitForm();
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all<Color>(
+                                Colors.white,
+                              ),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  // Border width
+                                ),
+                              ),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(
+                                    vertical: 12.0), // Add padding
+                              ),
+                            ),
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 106, 190, 83)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "vous n'avez pas de compte?",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.white),
+                            ),
+                            const SizedBox(width: 4,),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacementNamed(
+                                    context, '/register');
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets
+                                    .zero, // Remove any default padding
+                                minimumSize: const Size(0,
+                                    0), // Ensure no minimum size constraint
+                              ),
+                              child: const Text(
+                                'Register',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ))
+              ],
+            ),
+          ),
+        ),
+      );
+    }));
   }
 
   Future<void> _submitForm() async {
@@ -299,6 +268,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (success) {
         // Navigate to the main screen
+
         Navigator.pushReplacementNamed(context, '/');
       } else {
         // Handle login failure (e.g., show a snackbar or alert)

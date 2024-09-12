@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import './services/models/Company.dart';
 import 'screens/addCompanyPage.dart';
 import './services/models/Token.dart';
+import './services/models/User.dart';
 
 void main() {
   runApp(
@@ -14,6 +15,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         ChangeNotifierProvider(create: (_) => TokenProvider()),
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MyApp(),
     ),
@@ -30,7 +33,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         primaryColor: Colors.white,
         scaffoldBackgroundColor:
-            Colors.white, // Set the background color to white
+            Colors.white, //Set the background color to white
       ),
       routes: {
         '/home': (context) => HomePage(),

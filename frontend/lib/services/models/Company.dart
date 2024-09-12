@@ -19,12 +19,12 @@ class Company {
     required this.address,
     required this.phone1,
     this.phone2, // Optional
-    this.sign='', // Optional
+    this.sign = '', // Optional
     required this.session,
     required this.sessionStart,
-    this.priceGreenOlive=0,
-    this.priceTayebOlive=0,
-    this.priceDroOlive=0,
+    this.priceGreenOlive = 0,
+    this.priceTayebOlive = 0,
+    this.priceDroOlive = 0,
   });
 
   // Factory constructor to create a Company from a JSON map
@@ -62,7 +62,9 @@ class Company {
 
 class CompanyProvider with ChangeNotifier {
   Company? company;
+  String? message;
   bool _isLoading = true;
+  bool? error;
 
   bool get isLoading => _isLoading;
 
@@ -72,7 +74,10 @@ class CompanyProvider with ChangeNotifier {
 
   Future<void> _initializeProducts() async {
     final String? token = await getToken();
-    company = await getCompany(token);
+    final ress = await getCompany(token);
+    company = ress['company'];
+    message = ress['message'];
+    error = ress['error'];
     _isLoading = false;
     notifyListeners();
   }

@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
-
+from .permissions import IsActiveUser
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
@@ -14,10 +14,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:  # GET, HEAD, OPTIONS
-            return [permissions.AllowAny()]  # Allow access to non-admin users for GET requests
+            return [IsActiveUser()]  # Allow access to non-admin users for GET requests
         return [permissions.IsAdminUser()]  
     def perform_create(self, serializer):
         try:
+            print(self.request.user)
             serializer.save()
         except ValidationError as e:
             raise ValidationError(detail=str(e))

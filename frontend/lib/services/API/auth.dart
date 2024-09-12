@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../sharedPreferences/prefsAuth.dart';
+import '../models/User.dart';
 
 const String url = 'http://192.168.181.183:8000';
 
@@ -95,5 +96,36 @@ Future<bool> validateToken() async {
   } catch (e) {
     print('An error occurred: $e');
     return false;
+  }
+}
+
+Future<User?> getUser(String? token) async {
+  if (token == null) {
+    return null;
+  }
+  try {
+    final response = await http.get(
+      Uri.parse('$url/auth/get_user_data'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'token $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // The login was successful
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      // Save the token for future API requests (e.g., using shared_preferences)
+      return User.fromJson(responseData);
+    } else {
+      // The login failed
+      print('fetching user failed with status: ${response.statusCode}');
+      print('Error: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    print('An error occurred: $e');
+    return null;
   }
 }

@@ -10,6 +10,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password', None)
         user = NewUser.objects.create_user(**validated_data)
         if password:
+            print(password)
             user.set_password(password)
             user.save()
         return user
+    
+class RetrieveUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewUser
+        fields = ('id', 'username', 'is_superuser', 'is_staff')

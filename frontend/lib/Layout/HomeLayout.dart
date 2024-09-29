@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/models/User.dart';
 import '../components/navBar.dart';
-import '../services/API/auth.dart';
-import '../services/models/Token.dart';
 import 'package:provider/provider.dart';
 
 // Define a reusable Layout widget

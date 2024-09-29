@@ -1,5 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/User.dart';
 
 Future<void> storeToken(String token) async {
   final prefs = await SharedPreferences.getInstance();

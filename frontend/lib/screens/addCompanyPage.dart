@@ -6,6 +6,9 @@ import 'package:provider/provider.dart';
 import '../services/models/Company.dart';
 
 class AddCompanyPage extends StatefulWidget {
+  final Company? editCompany;
+
+  AddCompanyPage({Key? key, this.editCompany}) : super(key: key);
   @override
   State<AddCompanyPage> createState() => _AddCompanyPageState();
 }
@@ -37,11 +40,24 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
   FocusNode _tayebOliveFocusNode = FocusNode();
   FocusNode _droOliveFocusNode = FocusNode();
 
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _phone1Controller = TextEditingController();
+  TextEditingController _phone2Controller = TextEditingController();
+  TextEditingController _signController = TextEditingController();
+  TextEditingController _oliveSessionController = TextEditingController();
+  TextEditingController _oliveSessionStartController = TextEditingController();
+  TextEditingController _greenOliveController = TextEditingController();
+  TextEditingController _tayebOliveController = TextEditingController();
+  TextEditingController _droOliveController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
 
     // Listen for focus changes
+    print('rayane hi');
+
     _nameFocusNode.addListener(() {
       setState(() {});
     });
@@ -72,6 +88,43 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     _droOliveFocusNode.addListener(() {
       setState(() {});
     });
+
+    if (widget.editCompany != null) {
+      _name = widget.editCompany!.name;
+      _nameController.text = widget.editCompany!.name;
+
+      _address = widget.editCompany!.address;
+      _addressController.text = widget.editCompany!.address;
+
+      _phone1 = widget.editCompany!.phone1;
+      _phone1Controller.text = widget.editCompany!.phone1;
+
+      _oliveSession = widget.editCompany!.session;
+      _oliveSessionController.text = widget.editCompany!.session;
+
+      _oliveSessionStart = widget.editCompany!.sessionStart;
+      _oliveSessionStartController.text = widget.editCompany!.sessionStart;
+
+      _greenOlive = widget.editCompany!.priceGreenOlive.toString();
+      _greenOliveController.text =
+          widget.editCompany!.priceGreenOlive.toString();
+
+      _droOlive = widget.editCompany!.priceDroOlive.toString();
+      _droOliveController.text = widget.editCompany!.priceDroOlive.toString();
+
+      _tayebOlive = widget.editCompany!.priceTayebOlive.toString();
+      _tayebOliveController.text =
+          widget.editCompany!.priceTayebOlive.toString();
+    }
+
+    if (widget.editCompany!.phone2 != null) {
+      _phone2 = widget.editCompany!.phone2;
+      _phone2Controller.text = widget.editCompany!.phone2!;
+    }
+    if (widget.editCompany!.sign != null) {
+      _sign = widget.editCompany!.sign;
+      _signController.text = widget.editCompany!.sign!;
+    }
   }
 
   @override
@@ -80,7 +133,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     final companyProvider = Provider.of<CompanyProvider>(context);
 
     return Scaffold(
-        body: tokenProvider.isLoading
+        body: tokenProvider.isLoading || companyProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
                 child: Container(
@@ -95,18 +148,48 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                     ),
                   ),
                   child: Column(
+                    mainAxisAlignment: widget.editCompany != null
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.start,
                     children: [
                       const SizedBox(
                         height: 50,
                       ),
-                      const Text(
-                        'Add company',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white),
-                      ),
+                      widget.editCompany != null
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 5.0),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: const Icon(
+                                        Icons.arrow_back,
+                                        color: Colors.white,
+                                      )),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  const Text(
+                                    'Add company',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const Text(
+                              'Add company',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
+                            ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -156,6 +239,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         height: 4,
                                       ),
                                       TextFormField(
+                                        controller: _nameController,
                                         keyboardType: TextInputType.text,
                                         focusNode: _nameFocusNode,
                                         validator: (value) => value!.isEmpty
@@ -217,6 +301,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         height: 4,
                                       ),
                                       TextFormField(
+                                        controller: _addressController,
                                         keyboardType: TextInputType.text,
                                         focusNode: _addressFocusNode,
                                         validator: (value) => value!.isEmpty
@@ -289,6 +374,8 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                                   height: 4,
                                                 ),
                                                 TextFormField(
+                                                    controller:
+                                                        _phone1Controller,
                                                     keyboardType:
                                                         TextInputType.number,
                                                     focusNode: _phone1FocusNode,
@@ -388,6 +475,8 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                                   height: 4,
                                                 ),
                                                 TextFormField(
+                                                    controller:
+                                                        _phone2Controller,
                                                     enabled: enabeld,
                                                     keyboardType:
                                                         TextInputType.number,
@@ -482,6 +571,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         height: 4,
                                       ),
                                       TextFormField(
+                                        controller: _oliveSessionController,
                                         keyboardType: TextInputType.text,
                                         focusNode: _oliveSessionFocusNode,
                                         validator: (value) {
@@ -568,6 +658,8 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         height: 4,
                                       ),
                                       TextFormField(
+                                        controller:
+                                            _oliveSessionStartController,
                                         keyboardType: TextInputType.text,
                                         focusNode: _oliveSessionStartFocusNode,
                                         validator: (value) {
@@ -576,12 +668,25 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                           }
 
                                           try {
-                                            // Define the expected date format (e.g., yyyy-MM-dd)
+                                            // Define the expected date format (yyyy-MM-dd)
                                             final dateFormat =
                                                 DateFormat('yyyy-MM-dd');
-                                            dateFormat.parseStrict(value);
+                                            final parsedDate =
+                                                dateFormat.parseStrict(value);
 
-                                            // Optionally, check if the parsed date makes sense (e.g., no future dates)
+                                            // Check if the input matches exactly the 'yyyy-MM-dd' pattern
+                                            final regex =
+                                                RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                                            if (!regex.hasMatch(value)) {
+                                              return "required format YYYY-MM-DD";
+                                            }
+
+                                            // Check if the year is greater than 2020
+                                            if (parsedDate.year <= 2020) {
+                                              return "L'année doit être supérieure à 2020";
+                                            }
+
+                                            // Optionally, check if the parsed date is in the future
                                           } catch (e) {
                                             return "required format YYYY-MM-DD";
                                           }
@@ -649,6 +754,8 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         children: [
                                           Expanded(
                                             child: TextFormField(
+                                                controller:
+                                                    _greenOliveController,
                                                 keyboardType:
                                                     TextInputType.number,
                                                 focusNode: _greenOliveFocusNode,
@@ -717,6 +824,8 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                           ),
                                           Expanded(
                                             child: TextFormField(
+                                                controller:
+                                                    _tayebOliveController,
                                                 keyboardType:
                                                     TextInputType.number,
                                                 focusNode: _tayebOliveFocusNode,
@@ -786,6 +895,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                           ),
                                           Expanded(
                                             child: TextFormField(
+                                                controller: _droOliveController,
                                                 keyboardType:
                                                     TextInputType.number,
                                                 focusNode: _droOliveFocusNode,
@@ -865,6 +975,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         height: 4,
                                       ),
                                       TextFormField(
+                                        controller: _signController,
                                         keyboardType: TextInputType.text,
                                         focusNode: _signFocusNode,
                                         validator: (value) => value!.isEmpty
@@ -970,6 +1081,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
       _formKey.currentState?.save(); // Save the form state
 
       Company company = Company(
+        id: widget.editCompany == null? null : widget.editCompany!.id,
         name: _name!,
         address: _address!,
         phone1: _phone1!,
@@ -987,8 +1099,14 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
             _droOlive == null || _droOlive == '' ? 0 : int.parse(_droOlive!),
       );
 
-      bool ress = await addCompany(token, company);
-      if (ress) {
+      int? id;
+      if (widget.editCompany != null) {
+
+        id = await updateCompany(token, company);
+      } else {
+        id = await addCompany(token, company);
+      }
+      if (id != null) {
         await companyProvider.addNewCompany(company);
 
         Navigator.pushReplacementNamed(context, '/');

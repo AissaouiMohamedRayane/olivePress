@@ -3,6 +3,7 @@ import '../API/company.dart';
 import '../sharedPreferences/prefsAuth.dart';
 
 class Company {
+  int? id;
   final String name;
   final String address;
   final String phone1;
@@ -15,10 +16,11 @@ class Company {
   final int priceDroOlive;
 
   Company({
+    this.id,
     required this.name,
     required this.address,
     required this.phone1,
-    this.phone2, // Optional
+    this.phone2 = '', // Optional
     this.sign = '', // Optional
     required this.session,
     required this.sessionStart,
@@ -30,6 +32,7 @@ class Company {
   // Factory constructor to create a Company from a JSON map
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
+      id:json['id'],
       name: json['name'],
       address: json['address'],
       phone1: json['phone1'],
@@ -46,6 +49,7 @@ class Company {
   // Method to convert a Company object to a JSON map
   Map<String, dynamic> toJson() {
     return {
+      'id' : id,
       'name': name,
       'address': address,
       'phone1': phone1,

@@ -8,8 +8,10 @@ from rest_framework.authtoken.models import Token
 
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.views import APIView
 from rest_framework import status
+
 
 from .serializers import RegisterSerializer, RetrieveUserSerializer
 from .models import NewUser
@@ -37,6 +39,18 @@ class RegisterView(CreateAPIView):
             }, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class LogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Get the user's token
+            token = Token.objects.get(user=request.user)
+            token.delete()  # Delete the token to log the user out
+            return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+        except Token.DoesNotExist:
+            return Response({"detail": "No active session found."}, status=status.HTTP_400_BAD_REQUEST)
 
 class GetUserView(RetrieveAPIView):
     queryset = NewUser.objects.all()
@@ -46,3 +60,46 @@ class GetUserView(RetrieveAPIView):
     
     def get_object(self):
         return self.request.user
+    
+class GetStaffUsers(ListAPIView):
+    queryset = NewUser.objects.filter(is_staff=False)
+    serializer_class = RetrieveUserSerializer
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[IsAuthenticated, IsAdminUser]
+
+class DeleteUser(DestroyAPIView):
+    queryset = NewUser.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]  
+
+    def delete(self, request, *args, **kwargs):
+        # Retrieve the user ID from the URL
+        user_id = self.kwargs.get('pk')
+        print(user_id)
+
+        # Get the user instance
+        try:
+            user = self.get_object()  # Fetch the user based on the ID
+            user.delete()  # Delete the user
+            return Response(status=status.HTTP_204_NO_CONTENT)  # Return a no content response
+        except NewUser.DoesNotExist:
+            return Response(
+                {"detail": "User not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )    
+            
+class AddUserToStaf(UpdateAPIView):
+    queryset = NewUser.objects.all()  # Queryset to retrieve all users
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]  # Restrict to superusers only
+    serializer_class = RetrieveUserSerializer 
+    
+    def update(self, request, *args, **kwargs):
+        user_id = self.kwargs.get('pk')  # Get the user ID from the URL
+        try:
+            user = self.get_object()  # Fetch the user based on the ID
+            user.is_staff = True  # Set is_staff to True
+            user.save()  # Save the updated user instance
+            return Response({"detail": "User added to staff successfully."}, status=status.HTTP_200_OK)
+        except NewUser.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)

@@ -144,4 +144,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', '192.168.181.183']
+ALLOWED_HOSTS = ['localhost', '10.0.2.2', '192.168.19.183']

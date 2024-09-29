@@ -58,4 +58,53 @@ class UserProvider with ChangeNotifier {
     user = u;
     notifyListeners();
   }
+
+   Future<void> logoutUser() async {
+    final token = await getToken();
+    await logout(token);
+    await removeToken();
+    notifyListeners();
+  }
+}
+
+class UsersWithNoPermisson with ChangeNotifier {
+  List<User> users = [];
+  bool _isLoading = true;
+
+  bool get isLoading => _isLoading;
+
+  UsersWithNoPermisson() {
+    _initializeUsers();
+  }
+
+  Future<void> _initializeUsers() async {
+    String? token = await getToken();
+    final u = await getStaffUsers(token);
+    if (u != null) {
+      users.addAll(u);
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> RemoveUser(User user) async {
+    String? token = await getToken();
+
+    final res = await deleteUser(token, user.id);
+    if (res) {
+      users.remove(user);
+    }
+    notifyListeners();
+  }
+  Future<void> GivePermission(User user) async {
+    String? token = await getToken();
+
+    final res = await addUserToStaff(token, user.id);
+    if (res) {
+      users.remove(user);
+    }
+    notifyListeners();
+  }
+
+
 }

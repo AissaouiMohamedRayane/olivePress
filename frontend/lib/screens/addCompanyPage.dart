@@ -57,7 +57,6 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     super.initState();
 
     // Listen for focus changes
-    print('rayane hi');
 
     _nameFocusNode.addListener(() {
       setState(() {});
@@ -138,7 +137,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
             ? const Center(child: CircularProgressIndicator())
             : ChildPagesLayout(
                 text: 'Add Company',
-                center: widget.editCompany == null ? true: false,
+                center: widget.editCompany == null ? true : false,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
@@ -925,5 +924,34 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    // Dispose FocusNodes
+    _nameFocusNode.dispose();
+    _addressFocusNode.dispose();
+    _phone1FocusNode.dispose();
+    _phone2FocusNode.dispose();
+    _signFocusNode.dispose();
+    _oliveSessionFocusNode.dispose();
+    _oliveSessionStartFocusNode.dispose();
+    _greenOliveFocusNode.dispose();
+    _tayebOliveFocusNode.dispose();
+    _droOliveFocusNode.dispose();
+
+    // Dispose TextEditingControllers
+    _nameController.dispose();
+    _addressController.dispose();
+    _phone1Controller.dispose();
+    _phone2Controller.dispose();
+    _signController.dispose();
+    _oliveSessionController.dispose();
+    _oliveSessionStartController.dispose();
+    _greenOliveController.dispose();
+    _tayebOliveController.dispose();
+    _droOliveController.dispose();
+
+    super.dispose();
   }
 }

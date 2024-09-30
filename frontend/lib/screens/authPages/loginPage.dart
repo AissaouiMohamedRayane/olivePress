@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _usernameFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 

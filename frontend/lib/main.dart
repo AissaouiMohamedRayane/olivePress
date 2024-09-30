@@ -11,6 +11,8 @@ import 'screens/addCompanyPage.dart';
 import './services/models/Company.dart';
 import './services/models/Token.dart';
 import './services/models/User.dart';
+import './services/models/Customer.dart';
+
 import './services/API/auth.dart';
 
 void main() {
@@ -22,6 +24,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => TokenProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => UsersWithNoPermisson()),
+        ChangeNotifierProvider(create: (_) => StatesProvider()),
       ],
       child: MyApp(),
     ),

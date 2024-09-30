@@ -1,18 +1,17 @@
 from .serializers import CompanySerializer
 from rest_framework import viewsets, authentication
-from rest_framework.permissions import IsAdminUser, SAFE_METHODS
-from rest_framework.generics import UpdateAPIView
+from rest_framework.permissions import IsAdminUser, SAFE_METHODS, IsAuthenticated
 from .models import Company
 from rest_framework.exceptions import ValidationError
-from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
-from .permissions import IsActiveUser
+from custom_permissions.permissions import IsActiveUser
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     authentication_classes = [authentication.TokenAuthentication]
+    permission_classes=[IsAuthenticated]
 
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:  # GET, HEAD, OPTIONS

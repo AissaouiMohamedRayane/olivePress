@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/AddCustomer.dart';
 import 'package:provider/provider.dart';
 import '../services/models/Company.dart';
 import '../services/models/User.dart';
@@ -10,8 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
- 
-
   @override
   Widget build(BuildContext context) {
     final companyProvider = Provider.of<CompanyProvider>(context);
@@ -53,7 +52,43 @@ class _HomePageState extends State<HomePage> {
                     : Homelayout(
                         child: Column(
                           children: [
-                            Center(child: const Text('Main Content Here')),
+                            Center(
+                              child: Container(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return AddCustomerPage();
+                                      }),
+                                    );
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStateProperty.all<Color>(
+                                      Colors.green,
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        // Border width
+                                      ),
+                                    ),
+                                    padding:
+                                        MaterialStateProperty.all<EdgeInsets>(
+                                      const EdgeInsets.symmetric(
+                                          vertical: 12.0,
+                                          horizontal: 30), // Add padding
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Add customer",
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ));

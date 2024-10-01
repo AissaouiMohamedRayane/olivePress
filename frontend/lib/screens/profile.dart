@@ -118,6 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ElevatedButton(
                               onPressed: () async {
                                 await userProvider.logoutUser();
+                                Navigator.pushReplacementNamed(context, '/');
                               },
                               style: ButtonStyle(
                                 backgroundColor: WidgetStateProperty.all<Color>(
@@ -254,24 +255,35 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   usersWithNoPermisson.isLoading
                       ? const CircularProgressIndicator()
-                      : usersWithNoPermisson.users.isEmpty
-                          ? const Column(
+                      : userProvider.user!.isSuperUser
+                          ? usersWithNoPermisson.users.isEmpty
+                              ? const Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text('all users have permission'),
+                                  ],
+                                )
+                              : ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: usersWithNoPermisson.users.length,
+                                  itemBuilder: (context, index) {
+                                    return InvitationCard(
+                                        user: usersWithNoPermisson.users[index],
+                                        usersWithNoPermisson:
+                                            usersWithNoPermisson);
+                                  },
+                                )
+                          : const Column(
                               children: [
                                 SizedBox(
                                   height: 20,
                                 ),
-                                Text('all users have permission'),
+                                Text(
+                                    "you don't have the permission to see all users"),
                               ],
-                            )
-                          : ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: usersWithNoPermisson.users.length,
-                              itemBuilder: (context, index) {
-                                return InvitationCard(
-                                    user: usersWithNoPermisson.users[index],
-                                    usersWithNoPermisson: usersWithNoPermisson);
-                              },
                             ),
                   const SizedBox(
                     height: 60,

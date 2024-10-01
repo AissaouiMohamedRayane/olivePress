@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../API/auth.dart';
 import '../sharedPreferences/prefsAuth.dart';
+import '../models/Company.dart';
+import 'package:provider/provider.dart';
 
 class User {
   final int id;
@@ -42,11 +44,9 @@ class UserProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  UserProvider() {
-    _initializeProducts();
-  }
+  
 
-  Future<void> _initializeProducts() async {
+  Future<void> initializeProducts() async {
     String? token = await getToken();
     final u = await getUser(token);
     user = u;
@@ -63,6 +63,10 @@ class UserProvider with ChangeNotifier {
     final token = await getToken();
     await logout(token);
     await removeToken();
+    
+    _isLoading = true;
+    user = null;
+    print('user');
     notifyListeners();
   }
 }

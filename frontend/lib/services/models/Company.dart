@@ -32,7 +32,7 @@ class Company {
   // Factory constructor to create a Company from a JSON map
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
-      id:json['id'],
+      id: json['id'],
       name: json['name'],
       address: json['address'],
       phone1: json['phone1'],
@@ -49,7 +49,7 @@ class Company {
   // Method to convert a Company object to a JSON map
   Map<String, dynamic> toJson() {
     return {
-      'id' : id,
+      'id': id,
       'name': name,
       'address': address,
       'phone1': phone1,
@@ -72,11 +72,9 @@ class CompanyProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  CompanyProvider() {
-    _initializeProducts();
-  }
 
-  Future<void> _initializeProducts() async {
+
+  Future<void> initializeProducts() async {
     final String? token = await getToken();
     final ress = await getCompany(token);
     company = ress['company'];
@@ -88,6 +86,12 @@ class CompanyProvider with ChangeNotifier {
 
   Future<void> addNewCompany(Company com) async {
     company = com;
+    notifyListeners();
+  }
+
+  Future<void> removeCompany() async {
+    company = null;
+    _isLoading = true;
     notifyListeners();
   }
 }

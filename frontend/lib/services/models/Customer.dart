@@ -10,7 +10,7 @@ class Bags {
 
   factory Bags.fromJson(Map<String, dynamic> json) {
     return Bags(
-      weight: json['capacity'],
+      weight: json['weight'],
       number: json['number'],
     );
   }
@@ -101,8 +101,7 @@ class Wilaya {
   Wilaya({required this.id, required this.name});
 
   factory Wilaya.fromJson(Map<String, dynamic> json) {
-    print(json['id']);
-    print(json['name']);
+  
     return Wilaya(
       id: json['id'],
       name: json['state'],
@@ -129,8 +128,6 @@ class StatesProvider extends ChangeNotifier {
   Future<void> _initializeStates() async {
     final token = await getToken();
     states = await getStates(token);
-    print('rayane12');
-    print(states);
     _isLoading = false;
     notifyListeners();
   }

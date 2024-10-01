@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/Company.dart';
 
+// const String url = 'http://192.168.121.245:8000';
 const String url = 'http://192.168.19.183:8000';
 
 Future<Map<String, dynamic>> getCompany(String? token) async {
-  print('company');
   if (token == null) {
     return {'company': null, 'message': 'you do not have the token'};
   }

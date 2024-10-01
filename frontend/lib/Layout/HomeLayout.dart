@@ -20,23 +20,7 @@ class _HomelayoutState extends State<Homelayout> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final companyProvider = Provider.of<CompanyProvider>(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!companyProvider.isLoading && !userProvider.isLoading) {
-        if (userProvider.user != null) {
-          if (companyProvider.company == null &&
-              companyProvider.error == null &&
-              userProvider.user!.isSuperUser) {
-            Navigator.pushReplacementNamed(context,
-                '/addCompany'); // Replace with the route name of your page
-          }
-          if (companyProvider.error == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(companyProvider.message!)),
-            );
-          }
-        }
-      }
-    });
+  
 
     return Builder(builder: (context) {
       final String? currentRoute = ModalRoute.of(context)?.settings.name;

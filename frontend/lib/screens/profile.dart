@@ -17,6 +17,17 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      context.read<UsersWithNoPermisson>().initializeUsers();
+    }
+    _isInitialized = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -192,24 +203,29 @@ class _ProfilePageState extends State<ProfilePage> {
                             const SizedBox(
                               width: 10,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  companyProvider.company!.name,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.green[900]),
-                                ),
-                                Text(
-                                  companyProvider.company!.address,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black),
-                                ),
-                              ],
+                            SizedBox(
+                              width: userProvider.user!.isSuperUser?100:200,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    companyProvider.company!.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.green[900]),
+                                  ),
+                                  Text(
+                                    companyProvider.company!.address,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.black),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

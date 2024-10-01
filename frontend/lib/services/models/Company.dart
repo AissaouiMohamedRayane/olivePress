@@ -75,6 +75,8 @@ class CompanyProvider with ChangeNotifier {
 
 
   Future<void> initializeProducts() async {
+    _isLoading = true;
+    
     final String? token = await getToken();
     final ress = await getCompany(token);
     company = ress['company'];

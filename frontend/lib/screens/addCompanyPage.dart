@@ -115,15 +115,15 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
       _tayebOlive = widget.editCompany!.priceTayebOlive.toString();
       _tayebOliveController.text =
           widget.editCompany!.priceTayebOlive.toString();
-    }
 
-    if (widget.editCompany!.phone2 != null) {
-      _phone2 = widget.editCompany!.phone2;
-      _phone2Controller.text = widget.editCompany!.phone2!;
-    }
-    if (widget.editCompany!.sign != null) {
-      _sign = widget.editCompany!.sign;
-      _signController.text = widget.editCompany!.sign!;
+      if (widget.editCompany!.phone2 != null) {
+        _phone2 = widget.editCompany!.phone2;
+        _phone2Controller.text = widget.editCompany!.phone2!;
+      }
+      if (widget.editCompany!.sign != null) {
+        _sign = widget.editCompany!.sign;
+        _signController.text = widget.editCompany!.sign!;
+      }
     }
   }
 

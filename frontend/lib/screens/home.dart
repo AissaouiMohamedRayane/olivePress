@@ -29,6 +29,23 @@ class _HomePageState extends State<HomePage> {
     final userProvider = Provider.of<UserProvider>(context);
 
     // Navigate to another page if companyProvider.company is null
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!companyProvider.isLoading && !userProvider.isLoading) {
+        if (userProvider.user != null) {
+          if (companyProvider.company == null &&
+              companyProvider.error == null &&
+              userProvider.user!.isSuperUser) {
+            Navigator.pushReplacementNamed(context,
+                '/addCompany'); // Replace with the route name of your page
+          }
+          if (companyProvider.error == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(companyProvider.message!)),
+            );
+          }
+        }
+      }
+    });
 
     return Scaffold(
         body: companyProvider.isLoading || userProvider.isLoading
@@ -92,7 +109,65 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       )
-                    : const Center(
+                    :!userProvider.user!.isSuperUser
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text('you do not have the permission to add a company'),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  await userProvider.logoutUser();
+                                  Navigator.pushReplacementNamed(context, '/');
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                    Colors.red,
+                                  ),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      // Border width
+                                    ),
+                                  ),
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                    const EdgeInsets.symmetric(
+                                        vertical: 12.0,
+                                        horizontal: 26), // Add padding
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Logout",
+                                      style: TextStyle(
+                                          fontSize: 15, color: Colors.white),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Icon(
+                                      Icons.logout,
+                                      color: Colors.white,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ): 
+                    const Center(
                         child: CircularProgressIndicator(),
                       )
                 : !userProvider.user!.isStaff

@@ -44,9 +44,9 @@ class UserProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  
-
   Future<void> initializeProducts() async {
+    _isLoading = true;
+
     String? token = await getToken();
     final u = await getUser(token);
     user = u;
@@ -59,11 +59,11 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-   Future<void> logoutUser() async {
+  Future<void> logoutUser() async {
     final token = await getToken();
     await logout(token);
     await removeToken();
-    
+
     _isLoading = true;
     user = null;
     print('user');
@@ -77,16 +77,12 @@ class UsersWithNoPermisson with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  UsersWithNoPermisson() {
-    _initializeUsers();
-  }
-
-  Future<void> _initializeUsers() async {
+  Future<void> initializeUsers() async {
     String? token = await getToken();
     final u = await getStaffUsers(token);
     if (u != null) {
-      users.addAll(u);
-    }
+      users.addAll(u.where((newUser) =>
+          !users.any((existingUser) => existingUser.username == newUser.username)));    }
     _isLoading = false;
     notifyListeners();
   }
@@ -100,6 +96,7 @@ class UsersWithNoPermisson with ChangeNotifier {
     }
     notifyListeners();
   }
+
   Future<void> GivePermission(User user) async {
     String? token = await getToken();
 
@@ -109,6 +106,4 @@ class UsersWithNoPermisson with ChangeNotifier {
     }
     notifyListeners();
   }
-
-
 }

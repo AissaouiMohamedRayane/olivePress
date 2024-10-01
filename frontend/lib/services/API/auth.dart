@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../sharedPreferences/prefsAuth.dart';
 import '../models/User.dart';
 
+// const String url = 'http://192.168.121.245:8000';
 const String url = 'http://192.168.19.183:8000';
 
 Future<bool> login(String username, String password) async {
@@ -21,7 +22,6 @@ Future<bool> login(String username, String password) async {
       final Map<String, dynamic> responseData = json.decode(response.body);
       final String token = responseData['token'];
       await storeToken(token);
-      
 
       // Save the token for future API requests (e.g., using shared_preferences)
       return true;
@@ -39,9 +39,9 @@ Future<bool> login(String username, String password) async {
 
 Future<void> logout(String? token) async {
   // Replace with your Django logout URL
-if(token == null) {
-  return null;
-}
+  if (token == null) {
+    return null;
+  }
   try {
     final response = await http.post(
       Uri.parse('$url/auth/logout'),
@@ -222,7 +222,6 @@ Future<bool> deleteUser(String? token, int userId) async {
   }
 }
 
-
 Future<bool> addUserToStaff(String? token, int userId) async {
   if (token == null) {
     print("No token provided");
@@ -231,7 +230,8 @@ Future<bool> addUserToStaff(String? token, int userId) async {
 
   try {
     final response = await http.put(
-      Uri.parse('$url/auth/add_user_to_staff/$userId'), // Replace with your API URL
+      Uri.parse(
+          '$url/auth/add_user_to_staff/$userId'), // Replace with your API URL
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'token $token' // Replace with your token if necessary

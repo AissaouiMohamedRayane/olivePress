@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/Company.dart';
 
-// const String url = 'http://192.168.121.245:8000';
-const String url = 'http://192.168.19.183:8000';
+const String url = 'http://192.168.121.245:8000';
+// const String url = 'http://192.168.197.183:8000';
 
 Future<Map<String, dynamic>> getCompany(String? token) async {
   if (token == null) {

@@ -50,6 +50,7 @@ class Customer(models.Model):
     )
     state = models.ForeignKey(States, verbose_name=_("state"), on_delete=models.CASCADE, related_name='customer_from_state')
     zone=models.CharField(_("Zone"), max_length=30)
+    days_gone=models.IntegerField(_("days gone by"), default=0)
     olive_type = models.CharField(max_length=5, choices=OLIVE_TYPE_CHOICES, default=GREEN)
     def __str__(self):
         return f"{self.id} {self.full_name}: {self.state.state} {self.zone}"

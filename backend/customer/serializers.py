@@ -20,7 +20,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ['full_name', 'date_joined', 'phone', 'state', 'zone', 'bags', 'containers', 'olive_type']
+        fields = ['full_name', 'date_joined', 'phone', 'state', 'zone', 'bags', 'containers', 'olive_type', 'days_gone']
 
     def create(self, validated_data):
         # Extract bags and containers data from the validated data

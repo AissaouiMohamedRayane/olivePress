@@ -53,6 +53,7 @@ class Customer {
   final String zone;
   final List<Bags>? bags;
   final List<Containers>? containers;
+  final int daysGone;
   final int oliveType;
 
   Customer({
@@ -62,7 +63,8 @@ class Customer {
     required this.zone,
     this.containers,
     this.bags,
-    this.oliveType = 1,
+    required this.daysGone,
+    required this.oliveType,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
@@ -78,7 +80,9 @@ class Customer {
         zone: json['zone'],
         bags: bags,
         containers: containers,
-        oliveType: json['olive_type']);
+        oliveType: json['olive_type'],
+        daysGone: json['days_gone'],
+        );
   }
 
   // Method to convert a Company object to a JSON map
@@ -90,7 +94,8 @@ class Customer {
       'zone': zone,
       'bags': bags?.map((bag) => bag.toJson()).toList(),
       'containers': containers?.map((container) => container.toJson()).toList(),
-      'olive_type': oliveType
+      'olive_type': oliveType,
+      'days_gone': daysGone
     };
   }
 }
@@ -101,7 +106,6 @@ class Wilaya {
   Wilaya({required this.id, required this.name});
 
   factory Wilaya.fromJson(Map<String, dynamic> json) {
-  
     return Wilaya(
       id: json['id'],
       name: json['state'],

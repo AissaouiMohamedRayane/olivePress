@@ -55,7 +55,7 @@ class _HomelayoutState extends State<Homelayout> {
                                 ? 'Home'
                                 : currentRoute == '/search'
                                     ? 'Search'
-                                    : 'account',
+                                    : 'Account',
                             style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,

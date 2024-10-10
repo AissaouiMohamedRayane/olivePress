@@ -47,6 +47,7 @@ class Containers {
 }
 
 class Customer {
+  final int? id;
   final String name;
   final String phone;
   final Wilaya state;
@@ -57,6 +58,7 @@ class Customer {
   final int oliveType;
 
   Customer({
+    this.id,
     required this.name,
     required this.phone,
     required this.state,
@@ -68,26 +70,28 @@ class Customer {
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    var bagsList = json['features'] as List?;
+    var bagsList = json['bags'] as List?;
     List<Bags>? bags = bagsList?.map((i) => Bags.fromJson(i)).toList();
-    var containersList = json['features'] as List?;
+    var containersList = json['containers'] as List?;
     List<Containers>? containers =
         containersList?.map((i) => Containers.fromJson(i)).toList();
     return Customer(
-        name: json['full_name'],
-        phone: json['phone'],
-        state: json['state'],
-        zone: json['zone'],
-        bags: bags,
-        containers: containers,
-        oliveType: json['olive_type'],
-        daysGone: json['days_gone'],
-        );
+      id: json['id'],
+      name: json['full_name'],
+      phone: json['phone'],
+      state: Wilaya.fromJson(json['state']),
+      zone: json['zone'],
+      bags: bags,
+      containers: containers,
+      oliveType: json['olive_type'],
+      daysGone: json['days_gone'],
+    );
   }
 
   // Method to convert a Company object to a JSON map
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'full_name': name,
       'phone': phone,
       'state': state.id,

@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:frontend/services/API/customer.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'dart:io';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart'; // Import printing package
 
 import '../Layout/ChildPagesLayout.dart';
+
+import '../components/AddWeightWidget.dart';
+import '../components/PaymentReceipt.dart';
 
 import '../services/models/Company.dart';
 import '../services/models/Customer.dart';
 import '../services/models/Token.dart';
 
 class AddCustomerPage extends StatefulWidget {
-  const AddCustomerPage({super.key});
+  final Customer? customer;
+  const AddCustomerPage({super.key, this.customer});
 
   @override
   State<AddCustomerPage> createState() => _AddCustomerPageState();
@@ -50,6 +59,64 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     });
   }
 
+  void _setPdfFile(File file) {
+    setState(() {
+      _pdfFile = file;
+    });
+  }
+
+  Future<void> printPdf(String? token, int? customerId) async {
+    if (customerId != null) {
+      try {
+        await Printing.layoutPdf(
+          onLayout: (PdfPageFormat format) async =>
+              pdf2.save(), // Replace with actual PDF data
+        );
+
+        // Show a dialog to confirm if the user completed the printing
+        bool didPrint = await _showPrintConfirmationDialog();
+        if (didPrint) {
+          bool success = await setCustomerPrinted(token, customerId);
+          if (success) {
+            print('Customer printed status updated to true.');
+          } else {
+            print('Failed to update the customer printed status.');
+          }
+        } else {
+          print('User indicated that the document was not printed.');
+        }
+      } catch (e) {
+        print('An error occurred during PDF printing: $e');
+      }
+    }
+  }
+
+  Future<bool> _showPrintConfirmationDialog() async {
+    // Show a dialog asking the user if they printed the document
+    // Implement this using your preferred method of showing dialogs in Flutter
+    // This example assumes a Future that returns true if the user confirms
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Print Confirmation'),
+              content: Text('Did you complete printing the document?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('No'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('Yes'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
   String? _name;
   String? _phone;
   Wilaya? _state;
@@ -59,9 +126,17 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   int? _daysGone;
   int _oliveType = 1;
   int _totalWeight = 0;
-  int _totalSome = 1;
+  int _totalSum = 1;
 
   bool _showConf = false;
+
+  File? _pdfFile;
+
+  final pdf = pw.Document();
+  final pdf2 = pw.Document();
+  // Store the generated PDF file
+
+  Customer? _customer;
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
@@ -1131,14 +1206,41 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                           SizedBox(
                                             width: double.infinity,
                                             child: ElevatedButton(
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 if (_formKey.currentState
                                                         ?.validate() ??
                                                     false) {
                                                   _formKey.currentState?.save();
-
+                                                  List<Bags> bags =
+                                                      weightWidgetValue
+                                                          .map((bag) {
+                                                    return Bags.fromJson(bag);
+                                                  }).toList();
+                                                  Containers containers =
+                                                      Containers(
+                                                          capacity:
+                                                              _containerCapacity,
+                                                          number:
+                                                              _containersNumber);
+                                                  Customer customer = Customer(
+                                                    name: _name!,
+                                                    phone: _phone!,
+                                                    state: _state!,
+                                                    zone: _zone!,
+                                                    bags: bags,
+                                                    containers: [containers],
+                                                    oliveType: _oliveType,
+                                                    daysGone: _daysGone!,
+                                                  );
+                                                  File tempFile =
+                                                      await generatePdf(
+                                                          companyProvider,
+                                                          customer,
+                                                          _totalSum,
+                                                          pdf);
+                                                  _setPdfFile(tempFile);
                                                   setState(() {
-                                                    _totalSome = _totalWeight *
+                                                    _totalSum = _totalWeight *
                                                         (_oliveType == 1
                                                             ? companyProvider
                                                                 .company!
@@ -1150,6 +1252,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 : companyProvider
                                                                     .company!
                                                                     .priceTayebOlive);
+                                                    _customer = customer;
                                                     _showConf = true;
                                                   });
                                                 }
@@ -1186,84 +1289,113 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                           ),
                                         ]),
                                   ))
-                              : Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 40,
-                                    ),
-                                    Text("total price: $_totalSome Da"),
-                                    Row(
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _showConf = false;
-                                            });
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                WidgetStateProperty.all<Color>(
-                                              Colors.green,
-                                            ),
-                                            shape: WidgetStateProperty.all(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                // Border width
+                              : Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 40,
+                                      ),
+                                      SizedBox(
+                                        height: 500,
+                                        child: SfPdfViewer.file(_pdfFile!),
+                                      ),
+                                      Text("total price: $_totalSum Da"),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _showConf = false;
+                                                  _customer = null;
+                                                });
+                                              },
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    WidgetStateProperty.all<
+                                                        Color>(
+                                                  Colors.green,
+                                                ),
+                                                shape: WidgetStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    // Border width
+                                                  ),
+                                                ),
+                                                padding: WidgetStateProperty
+                                                    .all<EdgeInsets>(
+                                                  const EdgeInsets.symmetric(
+                                                      vertical:
+                                                          12.0), // Add padding
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                "Edit",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
-                                            padding: WidgetStateProperty.all<
-                                                EdgeInsets>(
-                                              const EdgeInsets.symmetric(
-                                                  vertical:
-                                                      12.0), // Add padding
-                                            ),
                                           ),
-                                          child: const Text(
-                                            "Edit",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                            ),
+                                          const SizedBox(
+                                            width: 20,
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          width: 20,
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            _submitForm(tokenProvider.token!);
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                WidgetStateProperty.all<Color>(
-                                              Colors.green,
-                                            ),
-                                            shape: WidgetStateProperty.all(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                // Border width
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                final tempId =
+                                                    await _submitForm(
+                                                        tokenProvider.token!);
+                                                await generatePdf(
+                                                    companyProvider,
+                                                    _customer!,
+                                                    _totalSum,
+                                                    pdf2,
+                                                    tempId);
+                                                await printPdf(
+                                                    tokenProvider.token,
+                                                    tempId);
+                                                Navigator.pushReplacementNamed(
+                                                    context, '/');
+                                              },
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    WidgetStateProperty.all<
+                                                        Color>(
+                                                  Colors.green,
+                                                ),
+                                                shape: WidgetStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    // Border width
+                                                  ),
+                                                ),
+                                                padding: WidgetStateProperty
+                                                    .all<EdgeInsets>(
+                                                  const EdgeInsets.symmetric(
+                                                      vertical:
+                                                          12.0), // Add padding
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                "Enregistrer",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
-                                            padding: WidgetStateProperty.all<
-                                                EdgeInsets>(
-                                              const EdgeInsets.symmetric(
-                                                  vertical:
-                                                      12.0), // Add padding
-                                            ),
                                           ),
-                                          child: const Text(
-                                            "Enregistrer",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                           const SizedBox(
                             height: 40,
@@ -1271,25 +1403,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                         ]))));
   }
 
-  Future<void> _submitForm(String token) async {
-    List<Bags> bags = weightWidgetValue.map((bag) {
-      print(bag);
-      return Bags.fromJson(bag);
-    }).toList();
-    Containers containers =
-        Containers(capacity: _containerCapacity, number: _containersNumber);
-    Customer customer = Customer(
-        name: _name!,
-        phone: _phone!,
-        state: _state!,
-        zone: _zone!,
-        bags: bags,
-        containers: [containers],
-        oliveType: _oliveType,
-        daysGone: _daysGone!
-        );
-    bool ress = await AddCustomer(token, customer);
-    if (ress) {
+  Future<int?> _submitForm(String token) async {
+    Customer customer = _customer!;
+    int? ress = await AddCustomer(token, customer);
+    if (ress != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -1299,7 +1416,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushReplacementNamed(context, '/');
+      return ress;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1310,6 +1427,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           backgroundColor: Colors.red,
         ),
       );
+      return null;
     }
   }
 
@@ -1329,218 +1447,5 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     _containerCapacityFocusNode.dispose();
 
     super.dispose();
-  }
-}
-
-class AddWeightWidget extends StatefulWidget {
-  final int index;
-  final Function? removeAddNewWeightWidget;
-  final Function? onWeightValueChange;
-  final Map<String, int?> values;
-  AddWeightWidget(
-      {required this.index,
-      required this.removeAddNewWeightWidget,
-      required this.onWeightValueChange,
-      required this.values});
-
-  @override
-  State<AddWeightWidget> createState() => _AddWeightWidgetState();
-}
-
-class _AddWeightWidgetState extends State<AddWeightWidget> {
-  int? _bagesNumber;
-  int? _bageWeight;
-  final FocusNode _bagesNumberFocusNode = FocusNode();
-  final FocusNode _bageWeightFocusNode = FocusNode();
-  final TextEditingController _bagesNumberController = TextEditingController();
-  final TextEditingController _bagesWeightController = TextEditingController();
-  void _onChanged() {
-    widget
-        .onWeightValueChange!({'number': _bagesNumber, 'weight': _bageWeight});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    print('rayane123');
-    _bagesNumber = widget.values['number'];
-    _bageWeight = widget.values['weight'];
-    _bagesNumberController.text = widget.values['number'] != null
-        ? widget.values['number'].toString()
-        : '';
-    _bagesWeightController.text = widget.values['weight'] != null
-        ? widget.values['weight'].toString()
-        : '';
-
-    // Listen for focus changes
-    _bagesNumberFocusNode.addListener(() {
-      setState(() {});
-    });
-    _bageWeightFocusNode.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    // Dispose FocusNodes
-    _bagesNumberFocusNode.dispose();
-    _bageWeightFocusNode.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 135,
-      padding: const EdgeInsets.only(top: 20, right: 15, left: 15, bottom: 15),
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: Colors.green[50]),
-      child: Stack(clipBehavior: Clip.none, children: [
-        widget.removeAddNewWeightWidget != null
-            ? Positioned(
-                top: -20,
-                right: -15,
-                child: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () =>
-                      widget.removeAddNewWeightWidget!(widget.index),
-                ),
-              )
-            : Container(),
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Nombre',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  TextFormField(
-                    controller: _bagesNumberController,
-                    focusNode: _bagesNumberFocusNode,
-                    keyboardType: TextInputType.number,
-                    validator: (value) => value!.isEmpty
-                        ? 'Veuillez entrer le nom et prénom'
-                        : null,
-                    cursorColor: Colors.black,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                      labelText:
-                          _bagesNumberFocusNode.hasFocus || _bagesNumber != null
-                              ? null
-                              : 'Nombre des sac',
-                      labelStyle: const TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 5,
-                        horizontal: 10,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                          ),
-                          borderRadius: BorderRadius.circular(10)),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Colors.green,
-                            width: 3,
-                          ),
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    onChanged: (value) {
-                      if (value == "") {
-                        _bagesNumber = null;
-                      } else {
-                        _bagesNumber = int.parse(value);
-                      }
-                      _onChanged();
-                    },
-                    onSaved: (value) =>
-                        _bagesNumber = value == null ? null : int.parse(value),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Poid',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  TextFormField(
-                      controller: _bagesWeightController,
-                      focusNode: _bageWeightFocusNode,
-                      keyboardType: TextInputType.number,
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        labelText:
-                            _bageWeightFocusNode.hasFocus || _bageWeight != null
-                                ? null
-                                : "Poid des sac",
-                        labelStyle: const TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 10,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                            ),
-                            borderRadius: BorderRadius.circular(10)),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.green,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onChanged: (value) {
-                        if (value == "") {
-                          _bageWeight = null;
-                        } else {
-                          _bageWeight = int.parse(value);
-                        }
-                        _onChanged();
-                      },
-                      onSaved: (value) => _bageWeight =
-                          value != null ? int.parse(value) : null),
-                ],
-              ),
-            ),
-          ],
-        )
-      ]),
-    );
   }
 }

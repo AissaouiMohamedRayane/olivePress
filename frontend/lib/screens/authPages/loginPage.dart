@@ -15,6 +15,20 @@ class _LoginPageState extends State<LoginPage> {
 
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
+  
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for focus changes
+
+    _usernameFocusNode.addListener(() {
+      setState(() {});
+    });
+    _passwordFocusNode.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   void dispose() {
@@ -228,7 +242,9 @@ class _LoginPageState extends State<LoginPage> {
                                   fontWeight: FontWeight.w300,
                                   color: Colors.white),
                             ),
-                            const SizedBox(width: 4,),
+                            const SizedBox(
+                              width: 4,
+                            ),
                             TextButton(
                               onPressed: () {
                                 Navigator.pushReplacementNamed(
@@ -237,8 +253,8 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets
                                     .zero, // Remove any default padding
-                                minimumSize: const Size(0,
-                                    0), // Ensure no minimum size constraint
+                                minimumSize: const Size(
+                                    0, 0), // Ensure no minimum size constraint
                               ),
                               child: const Text(
                                 'Register',

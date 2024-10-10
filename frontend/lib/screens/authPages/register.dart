@@ -15,6 +15,19 @@ class _RegisterPageState extends State<RegisterPage> {
 
   FocusNode _usernameFocusNode = FocusNode();
   FocusNode _passwordFocusNode = FocusNode();
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for focus changes
+
+    _usernameFocusNode.addListener(() {
+      setState(() {});
+    });
+    _passwordFocusNode.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   void dispose() {
@@ -228,7 +241,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   fontWeight: FontWeight.w300,
                                   color: Colors.white),
                             ),
-                            
                             TextButton(
                               onPressed: () {
                                 Navigator.pushReplacementNamed(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/AddCustomer.dart';
+import 'package:frontend/services/models/Token.dart';
 import 'package:provider/provider.dart';
 import '../services/models/Company.dart';
 import '../services/models/User.dart';
@@ -27,10 +28,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final companyProvider = Provider.of<CompanyProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
+    final tokenProvider = Provider.of<TokenProvider>(context);
 
     // Navigate to another page if companyProvider.company is null
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!companyProvider.isLoading && !userProvider.isLoading) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!companyProvider.isLoading &&
+          !userProvider.isLoading &&
+          tokenProvider.isLoading) {
         if (userProvider.user != null) {
           if (companyProvider.company == null &&
               companyProvider.error == null &&
@@ -109,67 +113,73 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       )
-                    :!userProvider.user!.isSuperUser
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text('you do not have the permission to add a company'),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                              width: 200,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  await userProvider.logoutUser();
-                                  Navigator.pushReplacementNamed(context, '/');
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStateProperty.all<Color>(
-                                    Colors.red,
-                                  ),
-                                  shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                      // Border width
+                    : !userProvider.user!.isSuperUser
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                    'you do not have the permission to add a company'),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  width: 200,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await userProvider.logoutUser();
+                                      Navigator.pushReplacementNamed(
+                                          context, '/');
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                        Colors.red,
+                                      ),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          // Border width
+                                        ),
+                                      ),
+                                      padding:
+                                          MaterialStateProperty.all<EdgeInsets>(
+                                        const EdgeInsets.symmetric(
+                                            vertical: 12.0,
+                                            horizontal: 26), // Add padding
+                                      ),
                                     ),
-                                  ),
-                                  padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
-                                    const EdgeInsets.symmetric(
-                                        vertical: 12.0,
-                                        horizontal: 26), // Add padding
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Logout",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Icon(
+                                          Icons.logout,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Logout",
-                                      style: TextStyle(
-                                          fontSize: 15, color: Colors.white),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Icon(
-                                      Icons.logout,
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ): 
-                    const Center(
-                        child: CircularProgressIndicator(),
-                      )
+                          )
+                        : const Center(
+                            child: CircularProgressIndicator(),
+                          )
                 : !userProvider.user!.isStaff
                     ? Center(
                         child: Column(
@@ -232,39 +242,37 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           children: [
                             Center(
-                              child: Container(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return AddCustomerPage();
-                                      }),
-                                    );
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        WidgetStateProperty.all<Color>(
-                                      Colors.green,
-                                    ),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        // Border width
-                                      ),
-                                    ),
-                                    padding:
-                                        MaterialStateProperty.all<EdgeInsets>(
-                                      const EdgeInsets.symmetric(
-                                          vertical: 12.0,
-                                          horizontal: 30), // Add padding
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return AddCustomerPage();
+                                    }),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                    Colors.green,
+                                  ),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      // Border width
                                     ),
                                   ),
-                                  child: const Text(
-                                    "Add customer",
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.white),
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                    const EdgeInsets.symmetric(
+                                        vertical: 12.0,
+                                        horizontal: 30), // Add padding
                                   ),
+                                ),
+                                child: const Text(
+                                  "Add customer",
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),
                                 ),
                               ),
                             ),

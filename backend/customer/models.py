@@ -52,6 +52,9 @@ class Customer(models.Model):
     zone=models.CharField(_("Zone"), max_length=30)
     days_gone=models.IntegerField(_("days gone by"), default=0)
     olive_type = models.CharField(max_length=5, choices=OLIVE_TYPE_CHOICES, default=GREEN)
+    is_printed=models.BooleanField(_("is customer printed"), default=False)
+    
+    
     def __str__(self):
         return f"{self.id} {self.full_name}: {self.state.state} {self.zone}"
 

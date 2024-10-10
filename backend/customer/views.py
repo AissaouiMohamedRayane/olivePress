@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,7 +7,7 @@ from rest_framework import status
 from .models import Customer, States
 from .models import States, Bag
 
-from .serializers import CustomerSerializer, StatesSerializer
+from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer
 
 from custom_permissions.permissions import IsActiveUser
 
@@ -16,7 +16,7 @@ class CreateCustomerView(CreateAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveUser]
 
     def post(self, request, *args, **kwargs):
         # Deserialize the incoming data
@@ -33,9 +33,86 @@ class CreateCustomerView(CreateAPIView):
 
         # Return an error response if validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ModifyCustomerView(UpdateAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsActiveUser]
+    lookup_field = 'pk'  # Assuming you're using 'id' or 'pk' to identify the customer
+
+    def put(self, request, *args, **kwargs):
+        # Fetch the existing customer instance
+        customer = self.get_object()
+        print(request.data)
+
+        # Deserialize the incoming data into the existing customer instance
+        serializer = self.get_serializer(customer, data=request.data)
+
+        # Validate the data
+        if serializer.is_valid():
+            # Save the updated customer data
+            serializer.save()
+
+            # Return a success response
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Return an error response if validation fails
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        # Fetch the existing customer instance
+        customer = self.get_object()
+        print(request.data)
+
+        # Deserialize the incoming partial data into the existing customer instance
+        serializer = self.get_serializer(customer, data=request.data, partial=True)
+
+        # Validate the data
+        if serializer.is_valid():
+            # Save the updated customer data
+            serializer.save()
+
+            # Return a success response
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Return an error response if validation fails
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListStates(ListAPIView):
     queryset= States.objects.all()
     serializer_class = StatesSerializer
     authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated, IsActiveUser]
+    permission_classes=[ IsActiveUser]
+    
+class SetPrintedView(UpdateAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[ IsActiveUser]
+
+    def update(self, request, *args, **kwargs):
+        customer = self.get_object()
+        if not customer.is_printed:
+            customer.is_printed = True
+            customer.save()
+            serializer = self.get_serializer(customer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'response': 'Customer is already printed'}, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomerSearchView(ListAPIView):
+    serializer_class = CustomerListSerializer
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[ IsActiveUser]
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned customers to a name query,
+        by filtering against a `name` query parameter in the URL.
+        """
+        queryset = Customer.objects.all()
+        name = self.request.query_params.get('name', None)
+        if name is not None:
+            queryset = queryset.filter(full_name__icontains=name)
+        return queryset

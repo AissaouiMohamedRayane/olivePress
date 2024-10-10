@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 //mouaadh
-// const String url = 'http://192.168.110.245:8000';
+const String url = 'http://192.168.110.245:8000';
 
 //moi
-const String url = 'http://192.168.197.183:8000';
+// const String url = 'http://192.168.197.183:8000';
 
 Future<List<Wilaya>?> getStates(String? token) async {
   if (token == null) {
@@ -75,6 +75,40 @@ Future<int?> AddCustomer(String? token, Customer customer) async {
   } catch (e) {
     print('An error occurred: $e');
     return null; // Return null to indicate an error occurred
+  }
+}
+
+Future<bool> UpdateCustomer(
+    String? token, int customerId, Customer customer) async {
+  if (token == null) {
+    return false;
+  }
+
+  try {
+    final response = await http.put(
+      Uri.parse('$url/customer/update/$customerId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token', // Note the 'Token' prefix
+      },
+      body: jsonEncode(customer.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      // Check for '200 OK'
+      // Customer update was successful
+      print('Customer updated successfully');
+      return true;
+      // Parse the response body to get the updated customer's ID
+    } else {
+      // Log detailed error information
+      print('Customer update failed with status: ${response.statusCode}');
+      print('Error: ${response.body}');
+    return false; // Return null to indicate an error occurred
+    }
+  } catch (e) {
+    print('An error occurred: $e');
+    return false; // Return null to indicate an error occurred
   }
 }
 

@@ -28,13 +28,6 @@ class AddCustomerPage extends StatefulWidget {
 class _AddCustomerPageState extends State<AddCustomerPage> {
   final _formKey = GlobalKey<FormState>();
 
-  List<Map<String, int?>> weightWidgetValue = [
-    {
-      'number': null,
-      'weight': null,
-    }
-  ];
-
   void _addNewWeightWidget() {
     setState(() {
       weightWidgetValue.add({
@@ -128,11 +121,17 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   int _totalWeight = 0;
   int _totalSum = 1;
 
+  List<Map<String, int?>> weightWidgetValue = [
+    {
+      'number': null,
+      'weight': null,
+    }
+  ];
   bool _showConf = false;
 
   File? _pdfFile;
 
-  final pdf = pw.Document();
+  var pdf = pw.Document();
   final pdf2 = pw.Document();
   // Store the generated PDF file
 
@@ -184,6 +183,48 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     });
     _stateController.text = 'Jijel';
     _state = Wilaya(id: 18, name: 'Jijel');
+
+    //Edit part
+
+    if (widget.customer == null) {
+      _stateController.text = 'Jijel';
+      _state = Wilaya(id: 18, name: 'Jijel');
+    } else {
+      _state = widget.customer!.state;
+      _stateController.text = widget.customer!.state.name;
+
+      _name = widget.customer!.name;
+      _nameController.text = widget.customer!.name;
+
+      _phone = widget.customer!.phone;
+      _phoneController.text = widget.customer!.phone;
+
+      _zone = widget.customer!.zone;
+      _zoneController.text = widget.customer!.zone;
+
+      _containersNumber = widget.customer!.containers![0].number;
+      _containersNumberController.text =
+          widget.customer!.containers![0].number.toString();
+
+      _containerCapacity = widget.customer!.containers![0].capacity;
+      _containerCapacityController.text =
+          widget.customer!.containers![0].capacity.toString();
+
+      _daysGone = widget.customer!.daysGone;
+      _daysGoneController.text = widget.customer!.daysGone.toString();
+
+      // Assuming that _oliveType, _totalWeight, and _totalSum are derived values
+      _oliveType = widget.customer!.oliveType;
+      if (widget.customer?.bags != null) {
+        weightWidgetValue = [];
+        widget.customer!.bags!.forEach((bag) {
+          weightWidgetValue.add({
+            'number': bag.number,
+            'weight': bag.weight,
+          });
+        });
+      }
+    }
   }
 
   @override
@@ -1309,7 +1350,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                 setState(() {
                                                   _showConf = false;
                                                   _customer = null;
+                                                  _pdfFile = null;
                                                 });
+                                                pdf = pw.Document();
                                               },
                                               style: ButtonStyle(
                                                 backgroundColor:
@@ -1347,20 +1390,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                           Expanded(
                                             child: ElevatedButton(
                                               onPressed: () async {
-                                                final tempId =
-                                                    await _submitForm(
-                                                        tokenProvider.token!);
-                                                await generatePdf(
-                                                    companyProvider,
-                                                    _customer!,
-                                                    _totalSum,
-                                                    pdf2,
-                                                    tempId);
-                                                await printPdf(
-                                                    tokenProvider.token,
-                                                    tempId);
-                                                Navigator.pushReplacementNamed(
-                                                    context, '/');
+                                                await _submitForm(
+                                                    tokenProvider.token!,
+                                                    companyProvider);
                                               },
                                               style: ButtonStyle(
                                                 backgroundColor:
@@ -1403,32 +1435,59 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                         ]))));
   }
 
-  Future<int?> _submitForm(String token) async {
+  Future<void> _submitForm(
+      String token, CompanyProvider companyProvider) async {
     Customer customer = _customer!;
-    int? ress = await AddCustomer(token, customer);
-    if (ress != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            ' created successfully.',
-            style: TextStyle(color: Colors.white),
+    if (widget.customer == null) {
+      int? ress = await AddCustomer(token, customer);
+      if (ress != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              ' created successfully.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green,
           ),
-          backgroundColor: Colors.green,
-        ),
-      );
-      return ress;
+        );
+        await generatePdf(companyProvider, _customer!, _totalSum, pdf2, ress);
+        await printPdf(token, ress);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              ' failed to create.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            ' failed to create.',
-            style: TextStyle(color: Colors.white),
+      bool ress = await UpdateCustomer(token, widget.customer!.id!, customer);
+      if (ress) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              ' updated successfully.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green,
           ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return null;
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              ' failed to update.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
+    Navigator.pushReplacementNamed(context, '/');
   }
 
   @override

@@ -56,6 +56,7 @@ class Customer {
   final List<Containers>? containers;
   final int daysGone;
   final int oliveType;
+  final bool isPrinted;
 
   Customer({
     this.id,
@@ -67,6 +68,7 @@ class Customer {
     this.bags,
     required this.daysGone,
     required this.oliveType,
+    this.isPrinted = false,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
@@ -85,6 +87,7 @@ class Customer {
       containers: containers,
       oliveType: json['olive_type'],
       daysGone: json['days_gone'],
+      isPrinted: json['is_printed'],
     );
   }
 
@@ -99,7 +102,8 @@ class Customer {
       'bags': bags?.map((bag) => bag.toJson()).toList(),
       'containers': containers?.map((container) => container.toJson()).toList(),
       'olive_type': oliveType,
-      'days_gone': daysGone
+      'days_gone': daysGone,
+      'is_printed': isPrinted,
     };
   }
 }

@@ -7,11 +7,8 @@ class TokenProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  TokenProvider() {
-    _initializeToken();
-  }
 
-  Future<void> _initializeToken() async {
+  Future<void> initializeToken() async {
     token = await getToken();
     _isLoading = false;
     notifyListeners();

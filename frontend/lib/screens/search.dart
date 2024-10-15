@@ -16,6 +16,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   List<Customer> customers = [];
   bool _isLoading = false;
+  bool _searchWithId = false;
 
   FocusNode _searchFocusNode = FocusNode();
 

@@ -72,11 +72,9 @@ class CompanyProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-
-
   Future<void> initializeProducts() async {
     _isLoading = true;
-    
+    print('parte1');
     final String? token = await getToken();
     final ress = await getCompany(token);
     company = ress['company'];

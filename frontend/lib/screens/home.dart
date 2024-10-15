@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
     if (!_isInitialized) {
       context.read<UserProvider>().initializeProducts();
       context.read<CompanyProvider>().initializeProducts();
+      context.read<TokenProvider>().initializeToken();
       _isInitialized = true;
     }
   }
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!companyProvider.isLoading &&
           !userProvider.isLoading &&
-          tokenProvider.isLoading) {
+          !tokenProvider.isLoading) {
         if (userProvider.user != null) {
           if (companyProvider.company == null &&
               companyProvider.error == null &&
@@ -52,7 +53,9 @@ class _HomePageState extends State<HomePage> {
     });
 
     return Scaffold(
-        body: companyProvider.isLoading || userProvider.isLoading
+        body: companyProvider.isLoading ||
+                userProvider.isLoading ||
+                tokenProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : companyProvider.company == null
                 ? !userProvider.user!.isSuperUser && !userProvider.user!.isStaff

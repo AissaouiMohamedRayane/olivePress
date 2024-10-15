@@ -4,10 +4,10 @@ import '../sharedPreferences/prefsAuth.dart';
 import '../models/User.dart';
 
 //mouaadh
-const String url = 'http://192.168.110.245:8000';
+// const String url = 'http://192.168.110.245:8000';
 
 //moi
-// const String url = 'http://192.168.197.183:8000';
+const String url = 'http://192.168.197.183:8000';
 
 Future<bool> login(String username, String password) async {
   try {
@@ -248,6 +248,41 @@ Future<bool> addUserToStaff(String? token, int userId) async {
     } else {
       // Handle error response
       print('Error adding user to staff: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      return false;
+    }
+  } catch (e) {
+    print('An error occurred: $e');
+    return false;
+  }
+}
+
+Future<bool> setUserOliveType(String? token, int userId, int oliveType) async {
+  if (token == null) {
+    print("No token provided");
+    return false; // Return false if the token is null
+  }
+
+  try {
+    final response = await http.put(
+      Uri.parse(
+          '$url/auth/change_olive_type/$userId'), // Replace with your API URL
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'token $token', // Use the provided token
+      },
+      body: jsonEncode({
+        'olive_type': oliveType, // The new olive_type value to be set
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // Olive type updated successfully
+      print('Olive type updated successfully');
+      return true;
+    } else {
+      // Handle error response
+      print('Error updating olive type: ${response.statusCode}');
       print('Response body: ${response.body}');
       return false;
     }

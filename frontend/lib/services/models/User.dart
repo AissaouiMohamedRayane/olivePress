@@ -9,22 +9,23 @@ class User {
   final String username;
   final bool isSuperUser;
   final bool isStaff;
+  final int? oliveType;
 
-  User({
-    required this.username,
-    required this.id,
-    required this.isSuperUser,
-    required this.isStaff,
-  });
+  User(
+      {required this.username,
+      required this.id,
+      required this.isSuperUser,
+      required this.isStaff,
+      this.oliveType});
 
   // Factory constructor to create a User from a JSON map
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      username: json['username'],
-      isSuperUser: json['is_superuser'],
-      isStaff: json['is_staff'],
-    );
+        id: json['id'],
+        username: json['username'],
+        isSuperUser: json['is_superuser'],
+        isStaff: json['is_staff'],
+        oliveType: json['olive_type']);
   }
 
   // Method to convert a User object to a JSON map
@@ -34,6 +35,7 @@ class User {
       'id': id,
       'is_superuser': isSuperUser,
       'is_staff': isStaff,
+      'olive_type': oliveType
     };
   }
 }
@@ -81,8 +83,9 @@ class UsersWithNoPermisson with ChangeNotifier {
     String? token = await getToken();
     final u = await getStaffUsers(token);
     if (u != null) {
-      users.addAll(u.where((newUser) =>
-          !users.any((existingUser) => existingUser.username == newUser.username)));    }
+      users.addAll(u.where((newUser) => !users
+          .any((existingUser) => existingUser.username == newUser.username)));
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -97,10 +100,11 @@ class UsersWithNoPermisson with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> GivePermission(User user) async {
+  Future<void> GivePermission(User user, int oliveType) async {
     String? token = await getToken();
 
     final res = await addUserToStaff(token, user.id);
+    await setUserOliveType(token, user.id, oliveType);
     if (res) {
       users.remove(user);
     }

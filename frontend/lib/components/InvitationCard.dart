@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/models/User.dart';
+import '../services/API/auth.dart';
 
-class InvitationCard extends StatelessWidget {
-  const InvitationCard({
+class InvitationCard extends StatefulWidget {
+  InvitationCard({
     super.key,
     required this.user,
     required this.usersWithNoPermisson,
@@ -10,6 +11,24 @@ class InvitationCard extends StatelessWidget {
 
   final User user;
   final UsersWithNoPermisson usersWithNoPermisson;
+
+  @override
+  State<InvitationCard> createState() => _InvitationCardState();
+}
+
+class _InvitationCardState extends State<InvitationCard> {
+  int _selectedOliveType = 1;
+
+  void _setOliveType(String value) {
+    setState(() {
+      _selectedOliveType = value == 'Green'
+          ? 1
+          : value == 'Red'
+              ? 2
+              : 3;
+    });
+    print(_selectedOliveType);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +62,28 @@ class InvitationCard extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Text(
-                user.username,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.green[900]),
+              Column(
+                children: [
+                  Text(
+                    widget.user.username,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.green[900]),
+                  ),
+                  ChoiceDropdown(
+                    setOliveType: _setOliveType,
+                  )
+                ],
               ),
             ],
           ),
           Column(
             children: [
               TextButton(
-                onPressed: () {
-                  usersWithNoPermisson.GivePermission(user);
+                onPressed: () async {
+                  widget.usersWithNoPermisson
+                      .GivePermission(widget.user, _selectedOliveType);
                 },
                 child: const Row(
                   children: [
@@ -80,7 +107,7 @@ class InvitationCard extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  usersWithNoPermisson.RemoveUser(user);
+                  widget.usersWithNoPermisson.RemoveUser(widget.user);
                 },
                 child: const Row(
                   children: [
@@ -105,6 +132,57 @@ class InvitationCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ChoiceDropdown extends StatefulWidget {
+  ChoiceDropdown({
+    super.key,
+    required this.setOliveType,
+  });
+
+  final Function setOliveType;
+  @override
+  _ChoiceDropdownState createState() => _ChoiceDropdownState();
+}
+
+class _ChoiceDropdownState extends State<ChoiceDropdown> {
+  // List of choices
+  List<String> choices = [
+    'Green',
+    'Red',
+    'Black',
+  ];
+
+  // Default selected value
+
+  String selectedChoice = 'Green';
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: DropdownButton<String>(
+        value: selectedChoice,
+        items: choices.map((String choice) {
+          return DropdownMenuItem<String>(
+            value: choice,
+            child: Text(
+              choice,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black),
+            ),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          setState(() {
+            selectedChoice = newValue!;
+          });
+          widget.setOliveType(newValue);
+        },
       ),
     );
   }

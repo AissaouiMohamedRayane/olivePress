@@ -55,7 +55,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
   @override
   void initState() {
     super.initState();
-
+    print('ba3');
     // Listen for focus changes
 
     _nameFocusNode.addListener(() {

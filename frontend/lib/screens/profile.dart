@@ -204,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               width: 10,
                             ),
                             SizedBox(
-                              width: userProvider.user!.isSuperUser?100:200,
+                              width: userProvider.user!.isSuperUser ? 100 : 200,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

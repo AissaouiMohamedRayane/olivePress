@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/home.dart';
-import 'screens/profile.dart';
-import 'screens/search.dart';
+import 'screens/Home.dart';
+import 'screens/Profile.dart';
+import 'screens/Search.dart';
 import 'screens/authPages/loginPage.dart';
 import 'screens/authPages/register.dart';
 import 'screens/addCompanyPage.dart';
+import 'screens/DeleteCustomer.dart';
+
 
 import './services/models/Company.dart';
 import './services/models/Token.dart';
@@ -20,7 +22,6 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
-        ChangeNotifierProvider(create: (_) => TokenProvider()),
         ChangeNotifierProvider(create: (_) => TokenProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => UsersWithNoPermisson()),
@@ -73,7 +74,6 @@ class _SplashScreenState extends State<SplashScreen> {
     // Try to get the token from shared preferences
     bool? ress = await validateToken();
     if (ress) {
-      print('rayane');
       // If the token is found, navigate to the HomePage
       Navigator.pushReplacementNamed(context, '/home');
     } else {

@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:frontend/services/models/Customer.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 //mouaadh
-const String url = 'http://192.168.110.245:8000';
+// const String url = 'http://192.168.110.245:8000';
 
 //moi
-// const String url = 'http://192.168.197.183:8000';
+const String url = 'http://192.168.197.183:8000';
 
 Future<List<Wilaya>?> getStates(String? token) async {
   if (token == null) {

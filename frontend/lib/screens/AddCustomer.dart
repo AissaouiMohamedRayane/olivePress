@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/API/customer.dart';
+import 'package:frontend/services/models/User.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'dart:io';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart'; // Import printing package
+import 'package:printing/printing.dart';
+
+import '../screens/DeleteCustomer.dart';
 
 import '../Layout/ChildPagesLayout.dart';
 
@@ -27,6 +30,10 @@ class AddCustomerPage extends StatefulWidget {
 
 class _AddCustomerPageState extends State<AddCustomerPage> {
   final _formKey = GlobalKey<FormState>();
+
+  void _removeFocus() {
+    FocusScope.of(context).unfocus();
+  }
 
   void _addNewWeightWidget() {
     setState(() {
@@ -117,7 +124,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   int? _containersNumber;
   int? _containerCapacity;
   int? _daysGone;
-  int _oliveType = 1;
   int _totalWeight = 0;
   int _totalSum = 1;
 
@@ -213,8 +219,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       _daysGone = widget.customer!.daysGone;
       _daysGoneController.text = widget.customer!.daysGone.toString();
 
-      // Assuming that _oliveType, _totalWeight, and _totalSum are derived values
-      _oliveType = widget.customer!.oliveType;
       if (widget.customer?.bags != null) {
         weightWidgetValue = [];
         widget.customer!.bags!.forEach((bag) {
@@ -222,6 +226,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             'number': bag.number,
             'weight': bag.weight,
           });
+          _totalWeight = _totalWeight + bag.weight!;
         });
       }
     }
@@ -232,13 +237,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     final companyProvider = Provider.of<CompanyProvider>(context);
     final statesProvider = Provider.of<StatesProvider>(context);
     final tokenProvider = Provider.of<TokenProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
 
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
         body: companyProvider.isLoading ||
                 statesProvider.isLoading ||
-                tokenProvider.isLoading
+                tokenProvider.isLoading ||
+                userProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : ChildPagesLayout(
                 text: 'Add Customer',
@@ -719,7 +726,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                           ),
                                           Center(
                                             child: ElevatedButton(
-                                                onPressed: _addNewWeightWidget,
+                                                onPressed: () {
+                                                  _addNewWeightWidget();
+                                                  _removeFocus();
+                                                },
                                                 style: ButtonStyle(
                                                   backgroundColor:
                                                       WidgetStateProperty.all<
@@ -1088,246 +1098,158 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                           const SizedBox(
                                             height: 20,
                                           ),
-                                          Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 20,
-                                                      horizontal: 15),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(20)),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          .withValues(
-                                                              alpha:
-                                                                  0.1), // Shadow color with transparency
-                                                      spreadRadius:
-                                                          1, // Spread radius
-                                                      blurRadius:
-                                                          5, // Blur radius
+                                          Row(children: [
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  if (_formKey.currentState
+                                                          ?.validate() ??
+                                                      false) {
+                                                    _formKey.currentState
+                                                        ?.save();
+                                                    List<Bags> bags =
+                                                        weightWidgetValue
+                                                            .map((bag) {
+                                                      return Bags.fromJson(bag);
+                                                    }).toList();
+
+                                                    Containers containers =
+                                                        Containers(
+                                                            capacity:
+                                                                _containerCapacity,
+                                                            number:
+                                                                _containersNumber);
+                                                    Customer customer =
+                                                        Customer(
+                                                      id: widget.customer?.id,
+                                                      name: _name!,
+                                                      phone: _phone!,
+                                                      state: _state!,
+                                                      zone: _zone!,
+                                                      bags: bags,
+                                                      containers: [containers],
+                                                      oliveType: userProvider
+                                                          .user!.oliveType!,
+                                                      daysGone: _daysGone!,
+                                                    );
+                                                    setState(() {
+                                                      _totalSum = _totalWeight *
+                                                          (userProvider.user!
+                                                                      .oliveType ==
+                                                                  1
+                                                              ? companyProvider
+                                                                  .company!
+                                                                  .priceGreenOlive
+                                                              : userProvider
+                                                                          .user!
+                                                                          .oliveType ==
+                                                                      2
+                                                                  ? companyProvider
+                                                                      .company!
+                                                                      .priceDroOlive
+                                                                  : companyProvider
+                                                                      .company!
+                                                                      .priceTayebOlive);
+                                                      _customer = customer;
+                                                    });
+                                                    File tempFile =
+                                                        await generatePdf(
+                                                            companyProvider,
+                                                            customer,
+                                                            _totalSum,
+                                                            pdf);
+                                                    _setPdfFile(tempFile);
+                                                    setState(() {
+                                                      _showConf = true;
+                                                    });
+                                                  }
+                                                },
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      WidgetStateProperty.all<
+                                                          Color>(
+                                                    Colors.green,
+                                                  ),
+                                                  shape:
+                                                      WidgetStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      // Border width
                                                     ),
-                                                  ],
-                                                  color: Colors.white),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    'Olive type',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontFamily: 'Poppins',
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Colors.black),
                                                   ),
-                                                  const SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly, // Space the radio buttons evenly
-                                                    children: <Widget>[
-                                                      // Green Radio Button
-                                                      Row(
-                                                        children: [
-                                                          Radio<int>(
-                                                            fillColor:
-                                                                MaterialStateProperty
-                                                                    .resolveWith<
-                                                                        Color>(
-                                                              (Set<MaterialState>
-                                                                  states) {
-                                                                if (states.contains(
-                                                                    MaterialState
-                                                                        .selected)) {
-                                                                  return Colors
-                                                                      .green; // Color when selected
-                                                                }
-                                                                return Theme.of(
-                                                                        context)
-                                                                    .unselectedWidgetColor; // Default color when not selected
-                                                              },
-                                                            ),
-                                                            value: 1,
-                                                            groupValue:
-                                                                _oliveType, // Group value keeps track of the selected radio button
-                                                            onChanged:
-                                                                (int? value) {
-                                                              setState(() {
-                                                                _oliveType =
-                                                                    value!; // Update the selected value
-                                                              });
-                                                            },
-                                                          ),
-                                                          const Text('Green'),
-                                                        ],
-                                                      ),
-
-                                                      // Red Radio Button
-                                                      Row(
-                                                        children: [
-                                                          Radio<int>(
-                                                            value: 2,
-                                                            fillColor:
-                                                                MaterialStateProperty
-                                                                    .resolveWith<
-                                                                        Color>(
-                                                              (Set<MaterialState>
-                                                                  states) {
-                                                                if (states.contains(
-                                                                    MaterialState
-                                                                        .selected)) {
-                                                                  return Colors
-                                                                      .green; // Color when selected
-                                                                }
-                                                                return Theme.of(
-                                                                        context)
-                                                                    .unselectedWidgetColor; // Default color when not selected
-                                                              },
-                                                            ),
-                                                            groupValue:
-                                                                _oliveType,
-                                                            onChanged:
-                                                                (int? value) {
-                                                              setState(() {
-                                                                _oliveType =
-                                                                    value!;
-                                                              });
-                                                            },
-                                                          ),
-                                                          const Text('Red'),
-                                                        ],
-                                                      ),
-
-                                                      Row(
-                                                        children: [
-                                                          Radio<int>(
-                                                            value: 3,
-                                                            fillColor:
-                                                                MaterialStateProperty
-                                                                    .resolveWith<
-                                                                        Color>(
-                                                              (Set<MaterialState>
-                                                                  states) {
-                                                                if (states.contains(
-                                                                    MaterialState
-                                                                        .selected)) {
-                                                                  return Colors
-                                                                      .green; // Color when selected
-                                                                }
-                                                                return Theme.of(
-                                                                        context)
-                                                                    .unselectedWidgetColor; // Default color when not selected
-                                                              },
-                                                            ),
-                                                            groupValue:
-                                                                _oliveType,
-                                                            onChanged:
-                                                                (int? value) {
-                                                              setState(() {
-                                                                _oliveType =
-                                                                    value!;
-                                                              });
-                                                            },
-                                                          ),
-                                                          const Text('Black'),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              )),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: ElevatedButton(
-                                              onPressed: () async {
-                                                if (_formKey.currentState
-                                                        ?.validate() ??
-                                                    false) {
-                                                  _formKey.currentState?.save();
-                                                  List<Bags> bags =
-                                                      weightWidgetValue
-                                                          .map((bag) {
-                                                    return Bags.fromJson(bag);
-                                                  }).toList();
-                                                  Containers containers =
-                                                      Containers(
-                                                          capacity:
-                                                              _containerCapacity,
-                                                          number:
-                                                              _containersNumber);
-                                                  Customer customer = Customer(
-                                                    name: _name!,
-                                                    phone: _phone!,
-                                                    state: _state!,
-                                                    zone: _zone!,
-                                                    bags: bags,
-                                                    containers: [containers],
-                                                    oliveType: _oliveType,
-                                                    daysGone: _daysGone!,
-                                                  );
-                                                  File tempFile =
-                                                      await generatePdf(
-                                                          companyProvider,
-                                                          customer,
-                                                          _totalSum,
-                                                          pdf);
-                                                  _setPdfFile(tempFile);
-                                                  setState(() {
-                                                    _totalSum = _totalWeight *
-                                                        (_oliveType == 1
-                                                            ? companyProvider
-                                                                .company!
-                                                                .priceGreenOlive
-                                                            : _oliveType == 2
-                                                                ? companyProvider
-                                                                    .company!
-                                                                    .priceDroOlive
-                                                                : companyProvider
-                                                                    .company!
-                                                                    .priceTayebOlive);
-                                                    _customer = customer;
-                                                    _showConf = true;
-                                                  });
-                                                }
-                                              },
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    WidgetStateProperty.all<
-                                                        Color>(
-                                                  Colors.green,
-                                                ),
-                                                shape: WidgetStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    // Border width
+                                                  padding: WidgetStateProperty
+                                                      .all<EdgeInsets>(
+                                                    const EdgeInsets.symmetric(
+                                                        vertical:
+                                                            12.0), // Add padding
                                                   ),
                                                 ),
-                                                padding: WidgetStateProperty
-                                                    .all<EdgeInsets>(
-                                                  const EdgeInsets.symmetric(
-                                                      vertical:
-                                                          12.0), // Add padding
-                                                ),
-                                              ),
-                                              child: const Text(
-                                                "Enregistrer",
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.white,
+                                                child: const Text(
+                                                  "Enregistrer",
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
+                                            if (widget.customer != null)
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                            if (widget.customer != null)
+                                              Expanded(
+                                                  child: ElevatedButton(
+                                                      onPressed: () =>
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) {
+                                                              return DeleteCustomer(
+                                                                  customer: widget
+                                                                      .customer!,
+                                                                  token: tokenProvider
+                                                                      .token!);
+                                                            }),
+                                                          ),
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            WidgetStateProperty
+                                                                .all<Color>(
+                                                          Colors.red,
+                                                        ),
+                                                        shape:
+                                                            WidgetStateProperty
+                                                                .all(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            // Border width
+                                                          ),
+                                                        ),
+                                                        padding:
+                                                            WidgetStateProperty
+                                                                .all<
+                                                                    EdgeInsets>(
+                                                          const EdgeInsets
+                                                              .symmetric(
+                                                              vertical:
+                                                                  12.0), // Add padding
+                                                        ),
+                                                      ),
+                                                      child: Text(
+                                                        'Remove',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                        ),
+                                                      )))
+                                          ]),
                                         ]),
                                   ))
                               : Padding(
@@ -1475,6 +1397,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             backgroundColor: Colors.green,
           ),
         );
+        await generatePdf(
+            companyProvider, _customer!, _totalSum, pdf2, widget.customer!.id);
+        await printPdf(token, widget.customer!.id);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

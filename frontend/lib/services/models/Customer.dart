@@ -57,6 +57,8 @@ class Customer {
   final int daysGone;
   final int oliveType;
   final bool isPrinted;
+  bool isActive;
+  String? cancelReason;
 
   Customer({
     this.id,
@@ -69,6 +71,8 @@ class Customer {
     required this.daysGone,
     required this.oliveType,
     this.isPrinted = false,
+    this.isActive = true,
+    this.cancelReason,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
@@ -88,6 +92,8 @@ class Customer {
       oliveType: json['olive_type'],
       daysGone: json['days_gone'],
       isPrinted: json['is_printed'],
+      isActive: json['is_active'],
+      cancelReason: json['cancel_reason'],
     );
   }
 
@@ -104,6 +110,7 @@ class Customer {
       'olive_type': oliveType,
       'days_gone': daysGone,
       'is_printed': isPrinted,
+      'cancel_reason': cancelReason,
     };
   }
 }

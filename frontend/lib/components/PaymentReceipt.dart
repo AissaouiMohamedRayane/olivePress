@@ -88,7 +88,12 @@ Future<File> generatePdf(CompanyProvider companyProvider, Customer customer,
                                 fontSize: 30,
                                 fontWeight: pw.FontWeight.normal)),
                         pw.SizedBox(width: 80),
-                        pw.Text(id.toString() ?? '00000',
+                        pw.Text(
+                            id != null
+                                ? id.toString()
+                                : customer.id != null
+                                    ? customer.id.toString()
+                                    : '00000',
                             style: pw.TextStyle(
                                 fontSize: 30,
                                 fontWeight: pw.FontWeight.normal)),

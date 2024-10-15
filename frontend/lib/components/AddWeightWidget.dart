@@ -22,6 +22,8 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
   final FocusNode _bageWeightFocusNode = FocusNode();
   final TextEditingController _bagesNumberController = TextEditingController();
   final TextEditingController _bagesWeightController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   void _onChanged() {
     widget
         .onWeightValueChange!({'number': _bagesNumber, 'weight': _bageWeight});
@@ -165,6 +167,11 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                       controller: _bagesWeightController,
                       focusNode: _bageWeightFocusNode,
                       keyboardType: TextInputType.number,
+                      validator: (value) => value!.isEmpty
+                          ? 'Veuillez entrer le nom et prénom'
+                          : int.parse(value) < 1
+                              ? 'la valeur doit etre > 0'
+                              : null,
                       cursorColor: Colors.black,
                       decoration: InputDecoration(
                         labelText:
@@ -206,7 +213,7 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
               ),
             ),
           ],
-        )
+        ),
       ]),
     );
   }

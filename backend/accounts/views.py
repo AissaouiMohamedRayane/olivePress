@@ -6,14 +6,14 @@ from rest_framework.authtoken.models import Token
 
 
 
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 
-
-from .serializers import RegisterSerializer, RetrieveUserSerializer
+from custom_permissions.permissions import IsSuperUser
+from .serializers import RegisterSerializer, RetrieveUserSerializer, UserOliveTypeSerializer
 from .models import NewUser
 
 
@@ -65,12 +65,12 @@ class GetStaffUsers(ListAPIView):
     queryset = NewUser.objects.filter(is_staff=False)
     serializer_class = RetrieveUserSerializer
     authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated, IsAdminUser]
+    permission_classes=[IsAuthenticated, IsSuperUser]
 
 class DeleteUser(DestroyAPIView):
     queryset = NewUser.objects.all()
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]  
+    permission_classes = [IsAuthenticated, IsSuperUser]  
 
     def delete(self, request, *args, **kwargs):
         # Retrieve the user ID from the URL
@@ -91,7 +91,7 @@ class DeleteUser(DestroyAPIView):
 class AddUserToStaf(UpdateAPIView):
     queryset = NewUser.objects.all()  # Queryset to retrieve all users
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]  # Restrict to superusers only
+    permission_classes = [IsAuthenticated, IsSuperUser]  # Restrict to superusers only
     serializer_class = RetrieveUserSerializer 
     
     def update(self, request, *args, **kwargs):
@@ -103,3 +103,22 @@ class AddUserToStaf(UpdateAPIView):
             return Response({"detail": "User added to staff successfully."}, status=status.HTTP_200_OK)
         except NewUser.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ChangeUserOliveTypeView(UpdateAPIView):
+    """
+    API view to allow superusers to change a user's olive_type.
+    """
+    queryset = NewUser.objects.all()
+    serializer_class = UserOliveTypeSerializer
+    permission_classes = [IsAuthenticated, IsSuperUser]  # Ensure only authenticated superusers can access
+
+    def update(self, request, *args, **kwargs):
+        # Validate the olive_type before saving
+        olive_type = request.data.get('olive_type')
+        
+        # Check if the provided olive_type is valid
+        if olive_type not in [NewUser.GREEN, NewUser.RED, NewUser.BLACK]:
+            return Response({"detail": "Invalid olive type."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().update(request, *args, **kwargs)

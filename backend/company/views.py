@@ -1,22 +1,21 @@
 from .serializers import CompanySerializer
 from rest_framework import viewsets, authentication
-from rest_framework.permissions import IsAdminUser, SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import  SAFE_METHODS, IsAuthenticated
 from .models import Company
+from custom_permissions.permissions import IsSuperUser, IsActiveUser
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework import status
-from custom_permissions.permissions import IsActiveUser
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes=[IsAuthenticated]
 
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:  # GET, HEAD, OPTIONS
             return [IsActiveUser()]  # Allow access to non-admin users for GET requests
-        return [IsAdminUser()]  
+        return [IsSuperUser()]  
     def perform_create(self, serializer):
         try:
             print(self.request.user)

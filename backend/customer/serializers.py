@@ -28,7 +28,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ['id', 'full_name', 'date_joined', 'phone', 'state', 'zone', 'bags', 'containers', 'olive_type', 'days_gone', 'is_printed']
+        fields = ['id', 'full_name', 'date_joined', 'phone', 'state', 'zone', 
+            'bags', 'containers', 'olive_type', 'days_gone', 'is_printed','is_active', 'cancel_reason']
 
     def create(self, validated_data):
         # Extract bags and containers data from the validated data
@@ -60,6 +61,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         instance.olive_type = validated_data.get('olive_type', instance.olive_type)
         instance.days_gone = validated_data.get('days_gone', instance.days_gone)
         instance.is_printed = validated_data.get('is_printed', instance.is_printed)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.cancel_reason = validated_data.get('cancel_reason', instance.cancel_reason)
         instance.save()
 
         # Update bags - this could involve deleting old ones and creating new ones or updating existing ones
@@ -85,6 +88,12 @@ class CustomerListSerializer(serializers.ModelSerializer):
         model = Customer
         fields = [
             'id', 'full_name', 'date_joined', 'phone', 'state', 'zone', 
-            'bags', 'containers', 'olive_type', 'days_gone', 'is_printed'
+            'bags', 'containers', 'olive_type', 'days_gone', 'is_printed','is_active', 'cancel_reason'
         ]
         read_only_fields = fields 
+        
+class CustomerCancelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Customer
+        fields = ['is_active', 'cancel_reason']

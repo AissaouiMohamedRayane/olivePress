@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Customer, States
-from .models import States, Bag
+from .models import States
+from django.shortcuts import get_object_or_404
 
-from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer
+from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer, CustomerCancelSerializer
 
 from custom_permissions.permissions import IsActiveUser
 
@@ -100,6 +101,8 @@ class SetPrintedView(UpdateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'response': 'Customer is already printed'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
 
 class CustomerSearchView(ListAPIView):
     serializer_class = CustomerListSerializer
@@ -108,11 +111,23 @@ class CustomerSearchView(ListAPIView):
 
     def get_queryset(self):
         """
-        Optionally restricts the returned customers to a name query,
-        by filtering against a `name` query parameter in the URL.
+        Optionally restricts the returned customers to a name or id query,
+        by filtering against a `name` or `id` value provided in the `name` query parameter.
         """
-        queryset = Customer.objects.all()
-        name = self.request.query_params.get('name', None)
-        if name is not None:
-            queryset = queryset.filter(full_name__icontains=name)
+        user = self.request.user
+        queryset = Customer.objects.filter(olive_type=user.olive_type, is_active = True)
+
+        # Get the `name` query parameter, which can either be a name or an ID
+        name_or_id = self.request.query_params.get('name', None)
+
+        if name_or_id is not None:
+            try:
+                # Try to convert `name_or_id` to an integer (assuming it's an ID)
+                customer_id = int(name_or_id)
+                # If successful, filter by `id`
+                queryset = queryset.filter(pk=customer_id)
+            except ValueError:
+                # If it's not an integer, assume it's a name and filter by `full_name`
+                queryset = queryset.filter(full_name__icontains=name_or_id)
+
         return queryset

@@ -20,11 +20,23 @@ class CustomAccountManager (BaseUserManager):
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_active', True)
         other_fields.setdefault('is_superuser', True)
+        other_fields.setdefault('olive_type', NewUser.GREEN)
+
         
         return self.create_user( username, password, **other_fields)
     
 
 class NewUser (AbstractBaseUser, PermissionsMixin):
+    GREEN = 1
+    RED = 2
+    BLACK = 3
+
+    OLIVE_TYPE_CHOICES = [
+        (GREEN, 'Green'),
+        (RED, 'Red'),
+        (BLACK, 'Black'),
+    ]
+    
     username = models.CharField(_("username"), max_length=50, unique=True)
     date_joined = models.DateField(default=timezone.now)
     phone = models.CharField(
@@ -33,6 +45,7 @@ class NewUser (AbstractBaseUser, PermissionsMixin):
         blank=True,
         validators=[RegexValidator(r'^\d{10}$', _('Phone number must be exactly 10 digits'))]
     )
+    olive_type = models.IntegerField(choices=OLIVE_TYPE_CHOICES, null=True, blank=True)
     
     
     is_active = models.BooleanField(default=True)

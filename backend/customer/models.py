@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from datetime import date
+from accounts.models import NewUser
 
 
 def current_date():
@@ -40,7 +41,8 @@ class Customer(models.Model):
 
 
     full_name=models.CharField(_("first name"), max_length=60, blank=False)
-    date_joined = models.DateField(default=current_date)
+
+    date_joined = models.DateTimeField(default=timezone.now)
 
     phone = models.CharField(
         _("phone number"),
@@ -51,9 +53,10 @@ class Customer(models.Model):
     state = models.ForeignKey(States, verbose_name=_("state"), on_delete=models.CASCADE, related_name='customer_from_state')
     zone=models.CharField(_("Zone"), max_length=30)
     days_gone=models.IntegerField(_("days gone by"), default=0)
-    olive_type = models.CharField(max_length=5, choices=OLIVE_TYPE_CHOICES, default=GREEN)
+    olive_type = models.IntegerField(choices=OLIVE_TYPE_CHOICES, null=True, blank=True)
     is_printed=models.BooleanField(_("is customer printed"), default=False)
-    
+    is_active = models.BooleanField(_("is user active"), default=True)
+    cancel_reason = models.CharField(_("Reason for cancellation"), max_length=100, blank=True, null=True)
     
     def __str__(self):
         return f"{self.id} {self.full_name}: {self.state.state} {self.zone}"

@@ -7,4 +7,5 @@ urlpatterns = [
     path('list_states', views.ListStates.as_view()),
     path('set_printed/<int:pk>', views.SetPrintedView.as_view()),
     path('search', views.CustomerSearchView.as_view()),
+    
 ]

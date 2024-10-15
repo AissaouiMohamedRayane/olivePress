@@ -18,4 +18,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 class RetrieveUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewUser
-        fields = ('id', 'username', 'is_superuser', 'is_staff')
+        fields = ('id', 'username', 'is_superuser', 'is_staff', 'olive_type')
+
+class UserOliveTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewUser
+        fields = ['olive_type']

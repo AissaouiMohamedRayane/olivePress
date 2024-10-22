@@ -39,6 +39,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         """
         partial = kwargs.pop('partial', False)  # Check if the update is partial
         instance = self.get_object()  # Get the object to update
+        print(request.data)
         serializer = self.get_serializer(instance, data=request.data, partial=partial)  # Serialize the data
         serializer.is_valid(raise_exception=True)  # Validate the data
         self.perform_update(serializer)  # Perform the update

@@ -187,14 +187,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     _daysGoneFocusNode.addListener(() {
       setState(() {});
     });
-    _stateController.text = 'Jijel';
-    _state = Wilaya(id: 18, name: 'Jijel');
+    _stateController.text = 'جيجل';
+    _state = Wilaya(id: 18, name: 'جيجل');
 
     //Edit part
 
     if (widget.customer == null) {
-      _stateController.text = 'Jijel';
-      _state = Wilaya(id: 18, name: 'Jijel');
+      _stateController.text = 'جيجل';
+      _state = Wilaya(id: 18, name: 'جيجل');
     } else {
       _state = widget.customer!.state;
       _stateController.text = widget.customer!.state.name;
@@ -248,7 +248,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 userProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : ChildPagesLayout(
-                text: 'Add Customer',
+                text: widget.customer == null ? 'إضافة عميل' : 'تعديل العميل',
                 center: false,
                 child: Container(
                     constraints: BoxConstraints(
@@ -306,7 +306,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 .start,
                                                         children: [
                                                           const Text(
-                                                            'Full Name',
+                                                            'الاسم الكامل',
                                                             style: TextStyle(
                                                                 fontSize: 16,
                                                                 fontFamily:
@@ -330,7 +330,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 _nameFocusNode,
                                                             validator: (value) =>
                                                                 value!.isEmpty
-                                                                    ? 'Veuillez entrer le nom et prénom'
+                                                                    ? 'الرجاء إدخال الاسم واللقب'
                                                                     : null,
                                                             cursorColor:
                                                                 Colors.black,
@@ -344,7 +344,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                       _name !=
                                                                           null
                                                                   ? null
-                                                                  : 'Entrer le nom',
+                                                                  : 'أدخل الاسم',
                                                               labelStyle: const TextStyle(
                                                                   fontSize: 14,
                                                                   fontFamily:
@@ -406,7 +406,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 .start,
                                                         children: [
                                                           const Text(
-                                                            'Nemuro',
+                                                            'الرقم',
                                                             style: TextStyle(
                                                                 fontSize: 16,
                                                                 fontFamily:
@@ -431,7 +431,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                               validator: (value) =>
                                                                   value!.length !=
                                                                           10
-                                                                      ? " incorrecte"
+                                                                      ? " الرقم غير صحيح"
                                                                       : null,
                                                               cursorColor:
                                                                   Colors.black,
@@ -442,7 +442,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                         _phone !=
                                                                             null
                                                                     ? null
-                                                                    : 'Entrer le Nemuro ',
+                                                                    : 'أدخل الرقم ',
                                                                 labelStyle: const TextStyle(
                                                                     fontSize:
                                                                         14,
@@ -503,7 +503,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                   height: 20,
                                                 ),
                                                 const Text(
-                                                  'State',
+                                                  'الولاية',
                                                   style: TextStyle(
                                                       fontSize: 16,
                                                       fontFamily: 'Poppins',
@@ -553,7 +553,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                     .hasFocus ||
                                                                 _state != null
                                                             ? null
-                                                            : 'Choose a state ',
+                                                            : 'اختر ولاية ',
                                                         labelStyle:
                                                             const TextStyle(
                                                                 fontSize: 16,
@@ -615,7 +615,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                   height: 20,
                                                 ),
                                                 const Text(
-                                                  'Zone',
+                                                  'البلدية',
                                                   style: TextStyle(
                                                       fontSize: 16,
                                                       fontFamily: 'Poppins',
@@ -633,7 +633,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                       TextInputType.text,
                                                   validator: (value) => value!
                                                           .isEmpty
-                                                      ? 'Veuillez entrer le nom et prénom'
+                                                      ? 'الرجاء إدخال البلدية'
                                                       : null,
                                                   cursorColor: Colors.black,
                                                   autovalidateMode:
@@ -644,7 +644,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 .hasFocus ||
                                                             _zone != null
                                                         ? null
-                                                        : 'Entrer la zone',
+                                                        : 'أدخل البلدية',
                                                     labelStyle: const TextStyle(
                                                         fontSize: 16,
                                                         fontFamily: 'Poppins',
@@ -738,7 +738,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                   ),
                                                 ),
                                                 child: const Text(
-                                                  'add bag',
+                                                  'أضف حقيبة',
                                                   style: TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
@@ -746,7 +746,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                       color: Colors.white),
                                                 )),
                                           ),
-                                          Text('Total weight: $_totalWeight'),
+                                          Text(
+                                              'الوزن الإجمالي : $_totalWeight'),
                                           const SizedBox(
                                             height: 20,
                                           ),
@@ -778,7 +779,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                             .start,
                                                     children: [
                                                       const Text(
-                                                        'Nombre',
+                                                        'العدد',
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             fontFamily:
@@ -801,7 +802,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                             _containersNumberFocusNode,
                                                         validator: (value) =>
                                                             value!.isEmpty
-                                                                ? 'Veuillez entrer le nom et prénom'
+                                                                ? 'الرجاء إدخال العدد'
                                                                 : null,
                                                         cursorColor:
                                                             Colors.black,
@@ -815,7 +816,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                   _containersNumber !=
                                                                       null
                                                               ? null
-                                                              : 'Nombre des récipient',
+                                                              : 'عدد الاوعية',
                                                           labelStyle:
                                                               const TextStyle(
                                                                   fontSize: 14,
@@ -886,7 +887,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                             .start,
                                                     children: [
                                                       const Text(
-                                                        'Capacity',
+                                                        'السعة',
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             fontFamily:
@@ -909,6 +910,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                               _containerCapacityFocusNode,
                                                           cursorColor:
                                                               Colors.black,
+                                                          validator: (value) =>
+                                                              value!.isEmpty
+                                                                  ? 'الرجاء سعة الاوعية'
+                                                                  : null,
                                                           decoration:
                                                               InputDecoration(
                                                             labelText: _containerCapacityFocusNode
@@ -916,7 +921,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                     _containerCapacity !=
                                                                         null
                                                                 ? null
-                                                                : "Capacité des récipients",
+                                                                : "سعة الاوعية",
                                                             labelStyle:
                                                                 const TextStyle(
                                                                     fontSize:
@@ -1008,7 +1013,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                     CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   const Text(
-                                                    'Days',
+                                                    'الأيام',
                                                     style: TextStyle(
                                                         fontSize: 16,
                                                         fontFamily: 'Poppins',
@@ -1028,7 +1033,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                           TextInputType.number,
                                                       validator: (value) => value!
                                                               .isEmpty
-                                                          ? 'Veuillez entrer le nom et prénom'
+                                                          ? 'الرجاء إدخال عدد الأيام'
                                                           : null,
                                                       cursorColor: Colors.black,
                                                       autovalidateMode:
@@ -1041,7 +1046,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 _daysGone !=
                                                                     null
                                                             ? null
-                                                            : 'Days gone by',
+                                                            : 'الأيام التي مرت',
                                                         labelStyle:
                                                             const TextStyle(
                                                                 fontSize: 16,
@@ -1132,6 +1137,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                           .user!.oliveType!,
                                                       daysGone: _daysGone!,
                                                     );
+                                                    print(userProvider
+                                                            .user!.oliveType ==
+                                                        2);
                                                     setState(() {
                                                       _totalSum = _totalWeight *
                                                           (userProvider.user!
@@ -1146,10 +1154,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                       2
                                                                   ? companyProvider
                                                                       .company!
-                                                                      .priceDroOlive
+                                                                      .priceRedOlive
                                                                   : companyProvider
                                                                       .company!
-                                                                      .priceTayebOlive);
+                                                                      .priceBlackOlive);
                                                       _customer = customer;
                                                     });
                                                     File tempFile =
@@ -1187,7 +1195,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                   ),
                                                 ),
                                                 child: const Text(
-                                                  "Enregistrer",
+                                                  "حفظ",
                                                   style: TextStyle(
                                                     fontSize: 20,
                                                     color: Colors.white,
@@ -1243,7 +1251,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                         ),
                                                       ),
                                                       child: Text(
-                                                        'Remove',
+                                                        'إزالة',
                                                         style: TextStyle(
                                                           fontSize: 20,
                                                           color: Colors.white,
@@ -1263,7 +1271,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                         height: 500,
                                         child: SfPdfViewer.file(_pdfFile!),
                                       ),
-                                      Text("total price: $_totalSum Da"),
+                                      Text("السعر الإجمالي: $_totalSum دج"),
                                       Row(
                                         children: [
                                           Expanded(
@@ -1298,7 +1306,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                 ),
                                               ),
                                               child: const Text(
-                                                "Edit",
+                                                "التعديل",
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.white,
@@ -1338,7 +1346,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                 ),
                                               ),
                                               child: const Text(
-                                                "Enregistrer",
+                                                "حفظ",
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.white,
@@ -1366,7 +1374,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              ' created successfully.',
+              ' تم إنشاؤه بنجاح.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.green,
@@ -1378,7 +1386,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              ' failed to create.',
+              ' فشل في الإنشاء.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,
@@ -1404,7 +1412,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              ' failed to update.',
+              ' فشل في التحديث.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,

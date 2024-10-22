@@ -72,7 +72,7 @@ class Customer {
     required this.oliveType,
     this.isPrinted = false,
     this.isActive = true,
-    this.cancelReason,
+    this.cancelReason = '',
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
@@ -111,6 +111,7 @@ class Customer {
       'days_gone': daysGone,
       'is_printed': isPrinted,
       'cancel_reason': cancelReason,
+      'is_active': isActive
     };
   }
 }

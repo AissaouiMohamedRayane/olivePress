@@ -71,7 +71,7 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
         widget.removeAddNewWeightWidget != null
             ? Positioned(
                 top: -20,
-                right: -15,
+                left: -15,
                 child: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () =>
@@ -86,7 +86,7 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Nombre',
+                    'العدد',
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins',
@@ -100,16 +100,15 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                     controller: _bagesNumberController,
                     focusNode: _bagesNumberFocusNode,
                     keyboardType: TextInputType.number,
-                    validator: (value) => value!.isEmpty
-                        ? 'Veuillez entrer le nom et prénom'
-                        : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'الرجاء إدخال العدد' : null,
                     cursorColor: Colors.black,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                       labelText:
                           _bagesNumberFocusNode.hasFocus || _bagesNumber != null
                               ? null
-                              : 'Nombre des sac',
+                              : 'عدد الحقائب',
                       labelStyle: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Poppins',
@@ -153,7 +152,7 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Poid',
+                    'الوزن',
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins',
@@ -168,16 +167,16 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                       focusNode: _bageWeightFocusNode,
                       keyboardType: TextInputType.number,
                       validator: (value) => value!.isEmpty
-                          ? 'Veuillez entrer le nom et prénom'
+                          ? 'الرجاء إدخال الوزن'
                           : int.parse(value) < 1
-                              ? 'la valeur doit etre > 0'
+                              ? 'يجب أن تكون القيمة > 0'
                               : null,
                       cursorColor: Colors.black,
                       decoration: InputDecoration(
                         labelText:
                             _bageWeightFocusNode.hasFocus || _bageWeight != null
                                 ? null
-                                : "Poid des sac",
+                                : "وزن الحقيبة",
                         labelStyle: const TextStyle(
                             fontSize: 14,
                             fontFamily: 'Poppins',

@@ -24,7 +24,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
   String? _oliveSession;
   String? _oliveSessionStart;
   String? _greenOlive;
-  String? _tayebOlive;
+  String? _redOlive;
   String? _droOlive;
   String? _sign;
 
@@ -38,7 +38,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
   FocusNode _oliveSessionFocusNode = FocusNode();
   FocusNode _oliveSessionStartFocusNode = FocusNode();
   FocusNode _greenOliveFocusNode = FocusNode();
-  FocusNode _tayebOliveFocusNode = FocusNode();
+  FocusNode _redOliveFocusNode = FocusNode();
   FocusNode _droOliveFocusNode = FocusNode();
 
   TextEditingController _nameController = TextEditingController();
@@ -49,7 +49,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
   TextEditingController _oliveSessionController = TextEditingController();
   TextEditingController _oliveSessionStartController = TextEditingController();
   TextEditingController _greenOliveController = TextEditingController();
-  TextEditingController _tayebOliveController = TextEditingController();
+  TextEditingController _redOliveController = TextEditingController();
   TextEditingController _droOliveController = TextEditingController();
 
   @override
@@ -82,7 +82,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     _greenOliveFocusNode.addListener(() {
       setState(() {});
     });
-    _tayebOliveFocusNode.addListener(() {
+    _redOliveFocusNode.addListener(() {
       setState(() {});
     });
     _droOliveFocusNode.addListener(() {
@@ -109,12 +109,11 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
       _greenOliveController.text =
           widget.editCompany!.priceGreenOlive.toString();
 
-      _droOlive = widget.editCompany!.priceDroOlive.toString();
-      _droOliveController.text = widget.editCompany!.priceDroOlive.toString();
+      _droOlive = widget.editCompany!.priceBlackOlive.toString();
+      _droOliveController.text = widget.editCompany!.priceBlackOlive.toString();
 
-      _tayebOlive = widget.editCompany!.priceTayebOlive.toString();
-      _tayebOliveController.text =
-          widget.editCompany!.priceTayebOlive.toString();
+      _redOlive = widget.editCompany!.priceRedOlive.toString();
+      _redOliveController.text = widget.editCompany!.priceRedOlive.toString();
 
       if (widget.editCompany!.phone2 != null) {
         _phone2 = widget.editCompany!.phone2;
@@ -136,7 +135,8 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
         body: tokenProvider.isLoading || companyProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : ChildPagesLayout(
-                text: 'Add Company',
+                text:
+                    widget.editCompany == null ? 'اضافة شركة' : 'تعديل الشركة',
                 center: widget.editCompany == null ? true : false,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -154,7 +154,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Nom',
+                                'الاسم',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontFamily: 'Poppins',
@@ -169,7 +169,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 keyboardType: TextInputType.text,
                                 focusNode: _nameFocusNode,
                                 validator: (value) => value!.isEmpty
-                                    ? 'Veuillez entrer le name'
+                                    ? 'الرجاء إدخال الاسم'
                                     : null,
                                 cursorColor: const Color(0xFF757575),
                                 autovalidateMode:
@@ -178,7 +178,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                   labelText:
                                       _nameFocusNode.hasFocus || _name != null
                                           ? null
-                                          : 'Entrer le nom',
+                                          : 'أدخل الاسم',
                                   labelStyle: const TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
@@ -213,7 +213,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 height: 20,
                               ),
                               const Text(
-                                'Adress',
+                                'العنوان',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontFamily: 'Poppins',
@@ -228,7 +228,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 keyboardType: TextInputType.text,
                                 focusNode: _addressFocusNode,
                                 validator: (value) => value!.isEmpty
-                                    ? "Veuillez entrer l'adress"
+                                    ? "الرجاء إدخال العنوان"
                                     : null,
                                 cursorColor: const Color(0xFF757575),
                                 autovalidateMode:
@@ -237,7 +237,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                   labelText: _addressFocusNode.hasFocus ||
                                           _address != null
                                       ? null
-                                      : "Entrer l'adress",
+                                      : "أدخل العنوان",
                                   labelStyle: const TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
@@ -281,7 +281,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         const Text(
-                                          'Nemuro 1',
+                                          'الرقم الأول',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontFamily: 'Poppins',
@@ -297,7 +297,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                             focusNode: _phone1FocusNode,
                                             validator: (value) =>
                                                 value!.length != 10
-                                                    ? " incorrecte"
+                                                    ? " الرقم غير صحيح"
                                                     : null,
                                             cursorColor:
                                                 const Color(0xFF757575),
@@ -306,7 +306,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                                   _phone1FocusNode.hasFocus ||
                                                           _phone1 != null
                                                       ? null
-                                                      : 'Entrer le Nemuro 1',
+                                                      : 'أدخل الرقم الأول',
                                               labelStyle: const TextStyle(
                                                   fontSize: 12,
                                                   fontFamily: 'Poppins',
@@ -365,7 +365,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         const Text(
-                                          'Nemuro 2',
+                                          'الرقم الثاني',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontFamily: 'Poppins',
@@ -385,7 +385,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                                     ? null
                                                     : value.length == 10
                                                         ? null
-                                                        : 'incorrecte'
+                                                        : 'الرقم غير صحيح'
                                                 : null,
                                             cursorColor:
                                                 const Color(0xFF757575),
@@ -396,7 +396,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                                   _phone2FocusNode.hasFocus ||
                                                           _phone2 != null
                                                       ? null
-                                                      : 'Entrer le Nemuro 2',
+                                                      : 'أدخل الرقم الثاني',
                                               labelStyle: const TextStyle(
                                                   fontSize: 12,
                                                   fontFamily: 'Poppins',
@@ -441,7 +441,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 height: 20,
                               ),
                               const Text(
-                                'Olive session',
+                                'موسم الزيتون',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontFamily: 'Poppins',
@@ -460,9 +460,9 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                   final pattern = RegExp(r'^\d{4}/\d{4}$');
 
                                   if (value == null || value.isEmpty) {
-                                    return "Veuillez entrer l'olive session";
+                                    return "الرجاء إدخال موسم الزيتون";
                                   } else if (!pattern.hasMatch(value)) {
-                                    return "required format YYYY/YYYY (ex: 2023/2024)";
+                                    return "التنسيق المطلوب XXXX/XXXX (مثال: 2023/2024)";
                                   } else {
                                     // Split the value into two years and check if the second year is greater by 1
                                     final years = value.split('/');
@@ -472,7 +472,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                     if (firstYear == null ||
                                         secondYear == null ||
                                         secondYear != firstYear + 1) {
-                                      return "incorrect session";
+                                      return "موسم غير صحيح";
                                     }
                                   }
 
@@ -485,7 +485,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                   labelText: _oliveSessionFocusNode.hasFocus ||
                                           _oliveSession != null
                                       ? null
-                                      : "Entrer l'olive session",
+                                      : "أدخل موسم الزيتون",
                                   labelStyle: const TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
@@ -520,7 +520,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 height: 20,
                               ),
                               const Text(
-                                'Session start',
+                                'بداية الموسم',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontFamily: 'Poppins',
@@ -536,7 +536,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 focusNode: _oliveSessionStartFocusNode,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return "Veuillez entrer une date";
+                                    return "الرجاء إدخال التاريخ";
                                   }
 
                                   try {
@@ -549,17 +549,17 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                     final regex =
                                         RegExp(r'^\d{4}-\d{2}-\d{2}$');
                                     if (!regex.hasMatch(value)) {
-                                      return "required format YYYY-MM-DD";
+                                      return "التنسيق المطلوب YYYY-MM-DD";
                                     }
 
                                     // Check if the year is greater than 2020
                                     if (parsedDate.year <= 2020) {
-                                      return "L'année doit être supérieure à 2020";
+                                      return "يجب أن يكون العام أكبر من 2020";
                                     }
 
                                     // Optionally, check if the parsed date is in the future
                                   } catch (e) {
-                                    return "required format YYYY-MM-DD";
+                                    return "التنسيق المطلوب YYYY-MM-DD";
                                   }
 
                                   return null;
@@ -572,7 +572,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                       _oliveSessionStartFocusNode.hasFocus ||
                                               _oliveSessionStart != null
                                           ? null
-                                          : "Entrer le depart de la session",
+                                          : "أدخل بداية الموسم",
                                   labelStyle: const TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
@@ -624,8 +624,9 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         controller: _greenOliveController,
                                         keyboardType: TextInputType.number,
                                         focusNode: _greenOliveFocusNode,
-                                        // validator: (value) =>
-                                        //     value!.isEmpty ? "Veuillez entrer le sign" : null,
+                                        validator: (value) => value!.isEmpty
+                                            ? "الرجاء إدخال سعر الزيتون الاخضر"
+                                            : null,
                                         cursorColor: const Color(0xFF757575),
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
@@ -634,7 +635,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                               _greenOliveFocusNode.hasFocus ||
                                                       _greenOlive != null
                                                   ? null
-                                                  : "Green",
+                                                  : "أخضر",
                                           labelStyle: const TextStyle(
                                               fontSize: 16,
                                               fontFamily: 'Poppins',
@@ -674,21 +675,21 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                   ),
                                   Expanded(
                                     child: TextFormField(
-                                        controller: _tayebOliveController,
+                                        controller: _redOliveController,
                                         keyboardType: TextInputType.number,
-                                        focusNode: _tayebOliveFocusNode,
-
-                                        // validator: (value) =>
-                                        //     value!.isEmpty ? "Veuillez entrer le sign" : null,
+                                        focusNode: _redOliveFocusNode,
+                                        validator: (value) => value!.isEmpty
+                                            ? "الرجاء إدخال سعر الزيتون أحمر"
+                                            : null,
                                         cursorColor: const Color(0xFF757575),
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
                                         decoration: InputDecoration(
                                           labelText:
-                                              _tayebOliveFocusNode.hasFocus ||
-                                                      _tayebOlive != null
+                                              _redOliveFocusNode.hasFocus ||
+                                                      _redOlive != null
                                                   ? null
-                                                  : "Tayeb",
+                                                  : "أحمر",
                                           labelStyle: const TextStyle(
                                               fontSize: 16,
                                               fontFamily: 'Poppins',
@@ -715,13 +716,12 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         ),
                                         onChanged: (value) {
                                           if (value == "") {
-                                            _tayebOlive = null;
+                                            _redOlive = null;
                                           } else {
-                                            _tayebOlive = value;
+                                            _redOlive = value;
                                           }
                                         },
-                                        onSaved: (value) =>
-                                            _tayebOlive = value),
+                                        onSaved: (value) => _redOlive = value),
                                   ),
                                   const SizedBox(
                                     width: 8,
@@ -731,9 +731,9 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                         controller: _droOliveController,
                                         keyboardType: TextInputType.number,
                                         focusNode: _droOliveFocusNode,
-
-                                        // validator: (value) =>
-                                        //     value!.isEmpty ? "Veuillez entrer le sign" : null,
+                                        validator: (value) => value!.isEmpty
+                                            ? "الرجاء إدخال سعر الزيتون أسود"
+                                            : null,
                                         cursorColor: const Color(0xFF757575),
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
@@ -742,7 +742,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                               _droOliveFocusNode.hasFocus ||
                                                       _droOlive != null
                                                   ? null
-                                                  : "Dro",
+                                                  : "أسود",
                                           labelStyle: const TextStyle(
                                               fontSize: 16,
                                               fontFamily: 'Poppins',
@@ -782,7 +782,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 height: 20,
                               ),
                               const Text(
-                                'Sign',
+                                'علامة',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontFamily: 'Poppins',
@@ -797,7 +797,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                 keyboardType: TextInputType.text,
                                 focusNode: _signFocusNode,
                                 validator: (value) => value!.isEmpty
-                                    ? "Veuillez entrer le sign"
+                                    ? "يرجى إدخال العلامة"
                                     : null,
                                 cursorColor: const Color(0xFF757575),
                                 autovalidateMode:
@@ -806,7 +806,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                   labelText:
                                       _signFocusNode.hasFocus || _sign != null
                                           ? null
-                                          : "Entrer le sign",
+                                          : "أدخل العلامة",
                                   labelStyle: const TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
@@ -865,7 +865,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
                                     ),
                                   ),
                                   child: const Text(
-                                    "Enregistrer",
+                                    "حفظ",
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.white,
@@ -901,10 +901,9 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
         priceGreenOlive: _greenOlive == null || _greenOlive == ''
             ? 0
             : int.parse(_greenOlive!),
-        priceTayebOlive: _tayebOlive == null || _tayebOlive == ''
-            ? 0
-            : int.parse(_tayebOlive!),
-        priceDroOlive:
+        priceRedOlive:
+            _redOlive == null || _redOlive == '' ? 0 : int.parse(_redOlive!),
+        priceBlackOlive:
             _droOlive == null || _droOlive == '' ? 0 : int.parse(_droOlive!),
       );
 
@@ -937,7 +936,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     _oliveSessionFocusNode.dispose();
     _oliveSessionStartFocusNode.dispose();
     _greenOliveFocusNode.dispose();
-    _tayebOliveFocusNode.dispose();
+    _redOliveFocusNode.dispose();
     _droOliveFocusNode.dispose();
 
     // Dispose TextEditingControllers
@@ -949,7 +948,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     _oliveSessionController.dispose();
     _oliveSessionStartController.dispose();
     _greenOliveController.dispose();
-    _tayebOliveController.dispose();
+    _redOliveController.dispose();
     _droOliveController.dispose();
 
     super.dispose();

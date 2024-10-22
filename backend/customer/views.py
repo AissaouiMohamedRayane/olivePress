@@ -115,7 +115,7 @@ class CustomerSearchView(ListAPIView):
         by filtering against a `name` or `id` value provided in the `name` query parameter.
         """
         user = self.request.user
-        queryset = Customer.objects.filter(olive_type=user.olive_type, is_active = True)
+        queryset = Customer.objects.filter(olive_type=user.olive_type)
 
         # Get the `name` query parameter, which can either be a name or an ID
         name_or_id = self.request.query_params.get('name', None)

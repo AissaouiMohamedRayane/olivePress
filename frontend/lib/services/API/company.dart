@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/Company.dart';
 
+
 //mouaadh
-// const String url = 'http://192.168.110.245:8000';
+// const String url = 'http://192.168.95.245:8000';
 
 //moi
-const String url = 'http://192.168.197.183:8000';
+const String url = 'http://192.168.215.183:8000';
 
 Future<Map<String, dynamic>> getCompany(String? token) async {
   if (token == null) {
-    return {'company': null, 'message': 'you do not have the token'};
+    return {'company': null, 'message': 'ليس لديك الرمز المميز'};
   }
   try {
     final response = await http.get(
@@ -23,21 +24,22 @@ Future<Map<String, dynamic>> getCompany(String? token) async {
 
     if (response.statusCode == 200) {
       // The login was successful
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
       if (responseData['exists'] == false) {
-        return {'company': null, 'message': 'company does not exist'};
+        return {'company': null, 'message': 'الشركة غير موجودة'};
       }
       final Company company = Company.fromJson(responseData['company']);
+      print(company.name);
 
       // Save the token for future API requests (e.g., using shared_preferences)
-      return {'company': company, 'message': 'success'};
+      return {'company': company, 'message': 'نجاح'};
     } else if (response.statusCode == 401 || response.statusCode == 403) {
       // The login failed
       print('fetching company failed with status: ${response.statusCode}');
       print('Error: ${response.body}');
-      return {'company': null, 'message': 'you are not an active user'};
+      return {'company': null, 'message': 'أنت لست مستخدم نشط'};
     }
-    return {'company': null, 'error': true, 'message': 'network errour'};
+    return {'company': null, 'error': true, 'message': 'خطأ في الشبكة'};
   } catch (e) {
     print('An error occurred: $e');
     return {'company': null};

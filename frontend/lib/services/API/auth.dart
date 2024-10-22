@@ -4,10 +4,10 @@ import '../sharedPreferences/prefsAuth.dart';
 import '../models/User.dart';
 
 //mouaadh
-// const String url = 'http://192.168.110.245:8000';
+// const String url = 'http://192.168.95.245:8000';
 
 //moi
-const String url = 'http://192.168.197.183:8000';
+const String url = 'http://192.168.215.183:8000';
 
 Future<bool> login(String username, String password) async {
   try {
@@ -146,7 +146,8 @@ Future<User?> getUser(String? token) async {
 
     if (response.statusCode == 200) {
       // The login was successful
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      final Map<String, dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
 
       // Save the token for future API requests (e.g., using shared_preferences)
       return User.fromJson(responseData);
@@ -178,7 +179,8 @@ Future<List<User>?> getStaffUsers(String? token) async {
 
     if (response.statusCode == 200) {
       // The request was successful, decode the response
-      final List<dynamic> responseData = json.decode(response.body);
+      final List<dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
 
       // Map the list of JSON objects to a list of User objects
       return responseData.map((data) => User.fromJson(data)).toList();

@@ -49,89 +49,93 @@ class _SearchPageState extends State<SearchPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: !_isLoading
-                    ? Column(
-                        children: <Widget>[
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            focusNode:
-                                _searchFocusNode, // Attach the FocusNode here
+                    ? Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              focusNode:
+                                  _searchFocusNode, // Attach the FocusNode here
 
-                            keyboardType: TextInputType.text,
+                              keyboardType: TextInputType.text,
 
-                            cursorColor: const Color(0xFF757575),
+                              cursorColor: const Color(0xFF757575),
 
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.search, // Search icon
-                                color: Colors.white, // Icon color
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 20),
-                              filled: true,
-                              fillColor: Colors.green[800],
-                              hintText: 'Search customer',
-                              hintStyle: const TextStyle(
+                              style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.green,
-                                  ),
-                                  borderRadius: BorderRadius.circular(30)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.green,
-                                  ),
-                                  borderRadius: BorderRadius.circular(30)),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              if (value != "") {
-                                setCustomers(tokenProvider.token, value);
-                              } else {
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  Icons.search, // Search icon
+                                  color: Colors.white, // Icon color
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 20),
+                                filled: true,
+                                fillColor: Colors.green[800],
+                                hintText: 'البحث عن العميل',
+                                hintStyle: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500),
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.green,
+                                    ),
+                                    borderRadius: BorderRadius.circular(30)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.green,
+                                    ),
+                                    borderRadius: BorderRadius.circular(30)),
+                              ),
+                              onChanged: (value) {
                                 setState(() {
-                                  customers = [];
+                                  _isLoading = true;
                                 });
-                              }
-                              setState(() {
-                                _isLoading = false;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          GridView.count(
-                            physics:
-                                NeverScrollableScrollPhysics(), // Disables scrolling
-                            shrinkWrap:
-                                true, // Makes the GridView take the minimum height required
+                                if (value != "") {
+                                  setCustomers(tokenProvider.token, value);
+                                } else {
+                                  setState(() {
+                                    customers = [];
+                                  });
+                                }
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            GridView.count(
+                              physics:
+                                  NeverScrollableScrollPhysics(), // Disables scrolling
+                              shrinkWrap:
+                                  true, // Makes the GridView take the minimum height required
 
-                            crossAxisCount: 2, // Number of columns
-                            crossAxisSpacing: 10, // Space between columns
-                            mainAxisSpacing: 10, // Space between rows
-                            padding: EdgeInsets.all(10),
+                              crossAxisCount: 2, // Number of columns
+                              crossAxisSpacing: 10, // Space between columns
+                              mainAxisSpacing: 10, // Space between rows
+                              padding: EdgeInsets.all(10),
 
-                            children: List.generate(customers.length, (index) {
-                              return Customercardwidget(
-                                customer: customers[index],
-                              );
-                            }),
-                          ),
-                          const SizedBox(
-                            height: 80,
-                          )
-                        ],
-                      )
+                              children:
+                                  List.generate(customers.length, (index) {
+                                return Customercardwidget(
+                                  customer: customers[index],
+                                  token: tokenProvider.token!,
+                                );
+                              }),
+                            ),
+                            const SizedBox(
+                              height: 80,
+                            )
+                          ],
+                        ))
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [

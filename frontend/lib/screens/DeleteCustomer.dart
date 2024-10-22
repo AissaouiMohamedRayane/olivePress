@@ -29,23 +29,34 @@ class _DeleteCustomerState extends State<DeleteCustomer> {
     return await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Delete Confirmation'),
-              content: Text('Do you really want to delete the customer?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: Text('No'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text('Yes'),
-                ),
-              ],
-            );
+            return Directionality(
+                textDirection: TextDirection.rtl,
+                child: AlertDialog(
+                  title: Text('تأكيد الحذف'),
+                  content: Text('هل تريد حقًا حذف العميل؟'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('لا'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text('نعم'),
+                    ),
+                  ],
+                ));
           },
         ) ??
         false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.customer.isActive) {
+      _deleteReason = widget.customer.cancelReason;
+      _deleteReasonController.text = widget.customer.cancelReason ?? '';
+    }
   }
 
   @override
@@ -54,7 +65,7 @@ class _DeleteCustomerState extends State<DeleteCustomer> {
 
     return Scaffold(
         body: ChildPagesLayout(
-            text: 'Delete customer',
+            text: 'حذف العميل',
             center: false,
             child: Container(
               constraints:
@@ -90,7 +101,7 @@ class _DeleteCustomerState extends State<DeleteCustomer> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Reason for deletion',
+                                  'سبب الحذف',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
@@ -105,7 +116,7 @@ class _DeleteCustomerState extends State<DeleteCustomer> {
                                   keyboardType: TextInputType.text,
                                   focusNode: _deleteReasonFocusNode,
                                   validator: (value) => value!.isEmpty
-                                      ? 'Veuillez entrer le nom et prénom'
+                                      ? 'الرجاء إدخال سبب الحذف'
                                       : null,
                                   cursorColor: Colors.black,
 
@@ -150,55 +161,134 @@ class _DeleteCustomerState extends State<DeleteCustomer> {
                         const SizedBox(
                           height: 10,
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final bool ress = await _showConfirmationDialog();
-                              if (ress) {
-                                _submitForm(widget.token);
-                              }
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all<Color>(
-                                Colors.red,
-                              ),
-                              shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  // Border width
+                        widget.customer.isActive
+                            ? SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    final bool ress =
+                                        await _showConfirmationDialog();
+                                    if (ress) {
+                                      _submitForm(widget.token, false);
+                                    }
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStateProperty.all<Color>(
+                                      Colors.red,
+                                    ),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        // Border width
+                                      ),
+                                    ),
+                                    padding:
+                                        MaterialStateProperty.all<EdgeInsets>(
+                                      const EdgeInsets.symmetric(
+                                          vertical: 12.0), // Add padding
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "حذف",
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white),
+                                  ),
                                 ),
+                              )
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        final bool ress =
+                                            await _showConfirmationDialog();
+                                        if (ress) {
+                                          _submitForm(widget.token, false);
+                                        }
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all<Color>(
+                                          Colors.green,
+                                        ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            // Border width
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all<
+                                            EdgeInsets>(
+                                          const EdgeInsets.symmetric(
+                                              vertical: 12.0), // Add padding
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        "تعديل",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        final bool ress =
+                                            await _showConfirmationDialog();
+                                        if (ress) {
+                                          _submitForm(widget.token, true);
+                                        }
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all<Color>(
+                                          Colors.red,
+                                        ),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            // Border width
+                                          ),
+                                        ),
+                                        padding: MaterialStateProperty.all<
+                                            EdgeInsets>(
+                                          const EdgeInsets.symmetric(
+                                              vertical: 12.0), // Add padding
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        "تفعل",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                const EdgeInsets.symmetric(
-                                    vertical: 12.0), // Add padding
-                              ),
-                            ),
-                            child: const Text(
-                              "Delete",
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                          ),
-                        ),
                       ],
                     ))
               ]),
             )));
   }
 
-  Future<void> _submitForm(String token) async {
+  Future<void> _submitForm(String token, bool isActive) async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
       Customer _customer = widget.customer;
-      _customer.isActive = true;
-      _customer.cancelReason = _deleteReason;
+      _customer.isActive = isActive;
+      _customer.cancelReason = !isActive ? _deleteReason : '';
       final bool ress = await UpdateCustomer(token, _customer.id!, _customer);
       if (ress) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              ' Deleted successfully.',
+              'تم الحذف بنجاح.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.green,
@@ -208,14 +298,14 @@ class _DeleteCustomerState extends State<DeleteCustomer> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              ' failed to Delete.',
+              ' فشل في الحذف.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,
           ),
         );
       }
+      Navigator.pushReplacementNamed(context, '/');
     }
-    Navigator.pushReplacementNamed(context, '/');
   }
 }

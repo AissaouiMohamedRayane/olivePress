@@ -12,8 +12,8 @@ class Company {
   final String session;
   final String sessionStart;
   final int priceGreenOlive;
-  final int priceTayebOlive;
-  final int priceDroOlive;
+  final int priceRedOlive;
+  final int priceBlackOlive;
 
   Company({
     this.id,
@@ -25,8 +25,8 @@ class Company {
     required this.session,
     required this.sessionStart,
     this.priceGreenOlive = 0,
-    this.priceTayebOlive = 0,
-    this.priceDroOlive = 0,
+    this.priceRedOlive = 0,
+    this.priceBlackOlive = 0,
   });
 
   // Factory constructor to create a Company from a JSON map
@@ -41,8 +41,8 @@ class Company {
       session: json['session'],
       sessionStart: json['session_start'],
       priceGreenOlive: json['price_green_olive'],
-      priceTayebOlive: json['price_tayeb_olive'],
-      priceDroOlive: json['price_dro_olive'],
+      priceRedOlive: json['price_tayeb_olive'],
+      priceBlackOlive: json['price_dro_olive'],
     );
   }
 
@@ -58,8 +58,8 @@ class Company {
       'session': session,
       'session_start': sessionStart,
       'price_green_olive': priceGreenOlive,
-      'price_tayeb_olive': priceTayebOlive,
-      'price_dro_olive': priceDroOlive,
+      'price_tayeb_olive': priceRedOlive,
+      'price_dro_olive': priceBlackOlive,
     };
   }
 }

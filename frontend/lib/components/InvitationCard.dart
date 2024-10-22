@@ -21,13 +21,12 @@ class _InvitationCardState extends State<InvitationCard> {
 
   void _setOliveType(String value) {
     setState(() {
-      _selectedOliveType = value == 'Green'
+      _selectedOliveType = value == 'أخضر'
           ? 1
-          : value == 'Red'
+          : value == 'أحمر'
               ? 2
               : 3;
     });
-    print(_selectedOliveType);
   }
 
   @override
@@ -44,7 +43,7 @@ class _InvitationCardState extends State<InvitationCard> {
               blurRadius: 5, // Blur radius
             ),
           ],
-          color: Color.fromARGB(255, 248, 248, 250)),
+          color: Colors.white),
       padding: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,20 +86,20 @@ class _InvitationCardState extends State<InvitationCard> {
                 },
                 child: const Row(
                   children: [
-                    Icon(
-                      Icons.check,
-                      color: Colors.green,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
                     Text(
-                      'Accepte',
+                      'قبول',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.green),
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    Icon(
+                      Icons.check,
+                      color: Colors.green,
+                      size: 20,
                     ),
                   ],
                 ),
@@ -111,20 +110,20 @@ class _InvitationCardState extends State<InvitationCard> {
                 },
                 child: const Row(
                   children: [
-                    Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
                     Text(
-                      'Remove',
+                      'حذف ',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.red),
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                      size: 20,
                     ),
                   ],
                 ),
@@ -151,14 +150,14 @@ class ChoiceDropdown extends StatefulWidget {
 class _ChoiceDropdownState extends State<ChoiceDropdown> {
   // List of choices
   List<String> choices = [
-    'Green',
-    'Red',
-    'Black',
+    'أخضر',
+    'أحمر',
+    'أسود',
   ];
 
   // Default selected value
 
-  String selectedChoice = 'Green';
+  String selectedChoice = 'أخضر';
 
   @override
   Widget build(BuildContext context) {

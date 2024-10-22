@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 //mouaadh
-// const String url = 'http://192.168.110.245:8000';
+// const String url = 'http://192.168.95.245:8000';
 
 //moi
-const String url = 'http://192.168.197.183:8000';
+const String url = 'http://192.168.215.183:8000';
 
 Future<List<Wilaya>?> getStates(String? token) async {
   if (token == null) {
@@ -23,7 +23,8 @@ Future<List<Wilaya>?> getStates(String? token) async {
 
     if (response.statusCode == 200) {
       // The login was successful
-      final List<dynamic> responseData = json.decode(response.body);
+      final List<dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
 
       // Save the token for future API requests (e.g., using shared_preferences)
       return responseData.map((state) => Wilaya.fromJson(state)).toList();
@@ -103,7 +104,7 @@ Future<bool> UpdateCustomer(
       // Log detailed error information
       print('Customer update failed with status: ${response.statusCode}');
       print('Error: ${response.body}');
-    return false; // Return null to indicate an error occurred
+      return false; // Return null to indicate an error occurred
     }
   } catch (e) {
     print('An error occurred: $e');
@@ -161,7 +162,7 @@ Future<List<Customer>> searchCustomers(String? token, String query) async {
 
     if (response.statusCode == 200) {
       // Parse the response body into a list of Customer objects
-      final List<dynamic> data = jsonDecode(response.body);
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
       return data.map((json) => Customer.fromJson(json)).toList();
     } else {
       print('Failed to fetch customers: ${response.statusCode}');

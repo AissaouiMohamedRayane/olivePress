@@ -15,12 +15,10 @@ class Homelayout extends StatefulWidget {
 }
 
 class _HomelayoutState extends State<Homelayout> {
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final companyProvider = Provider.of<CompanyProvider>(context);
-  
 
     return Builder(builder: (context) {
       final String? currentRoute = ModalRoute.of(context)?.settings.name;
@@ -46,32 +44,35 @@ class _HomelayoutState extends State<Homelayout> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0, right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            currentRoute == '/home'
-                                ? 'Home'
-                                : currentRoute == '/search'
-                                    ? 'Search'
-                                    : 'Account',
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green[900]),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.logout,
-                              color: Colors.green[900],
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              currentRoute == '/home'
+                                  ? 'الرئيسي'
+                                  : currentRoute == '/search'
+                                      ? 'البحث'
+                                      : 'الحساب',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green[900]),
                             ),
-                            onPressed: () async {
-                              await userProvider.logoutUser();
-                              Navigator.pushReplacementNamed(context, '/');
-                            },
-                          )
-                        ],
+                            IconButton(
+                              icon: Icon(
+                                Icons.logout,
+                                color: Colors.green[900],
+                              ),
+                              onPressed: () async {
+                                await userProvider.logoutUser();
+                                Navigator.pushReplacementNamed(context, '/');
+                              },
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     widget.child

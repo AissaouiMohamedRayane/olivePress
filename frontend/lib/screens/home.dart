@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "Logout",
+                                      "تسجيل الخروج",
                                       style: TextStyle(
                                           fontSize: 15, color: Colors.white),
                                     ),
@@ -122,8 +122,7 @@ class _HomePageState extends State<HomePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Text(
-                                    'you do not have the permission to add a company'),
+                                const Text('ليس لديك الإذن بإضافة شركة'),
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -161,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                          "Logout",
+                                          "تسجيل الخروج",
                                           style: TextStyle(
                                               fontSize: 15,
                                               color: Colors.white),
@@ -189,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Text('you do not have the permission'),
+                            const Text('ليس لديك الإذن لاستخدام التطبيق'),
                             const SizedBox(
                               height: 20,
                             ),
@@ -223,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "Logout",
+                                      "تسجيل الخروج",
                                       style: TextStyle(
                                           fontSize: 15, color: Colors.white),
                                     ),
@@ -273,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 child: const Text(
-                                  "Add customer",
+                                  "إضافة العميل",
                                   style: TextStyle(
                                       fontSize: 15, color: Colors.white),
                                 ),

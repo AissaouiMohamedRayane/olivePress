@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import '../screens/AddCustomer.dart';
+import '../screens/DeleteCustomer.dart';
+import '../services/models/Customer.dart';
 
 class Customercardwidget extends StatefulWidget {
-  final customer;
-  const Customercardwidget({super.key, required this.customer});
+  final Customer customer;
+  final String token;
+  const Customercardwidget(
+      {super.key, required this.customer, required this.token});
 
   @override
   State<Customercardwidget> createState() => _CustomercardwidgetState();
@@ -18,9 +22,11 @@ class _CustomercardwidgetState extends State<Customercardwidget> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) {
-              return AddCustomerPage(
-                customer: widget.customer,
-              );
+              return widget.customer.isActive
+                  ? AddCustomerPage(
+                      customer: widget.customer,
+                    )
+                  : DeleteCustomer(customer: widget.customer, token: widget.token);
             }),
           );
         },
@@ -40,9 +46,18 @@ class _CustomercardwidgetState extends State<Customercardwidget> {
                           color: Colors.green[50],
                           borderRadius: BorderRadius.circular(5)),
                       child: Center(
-                          child: Image.asset(
-                        'assets/images/profile2.png',
-                      )),
+                          child: widget.customer.isActive
+                              ? Image.asset(
+                                  'assets/images/profile2.png',
+                                )
+                              : Text(
+                                  'تم الحذف',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red,
+                                  ),
+                                )),
                     ),
                   ),
                   const SizedBox(

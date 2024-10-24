@@ -7,7 +7,6 @@ import 'screens/Search.dart';
 import 'screens/authPages/loginPage.dart';
 import 'screens/authPages/register.dart';
 import 'screens/addCompanyPage.dart';
-import 'screens/DeleteCustomer.dart';
 
 
 import './services/models/Company.dart';

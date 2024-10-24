@@ -76,17 +76,18 @@ class Customer {
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    var bagsList = json['bags'] as List?;
+    final bagsList = json['bags'] as List?;
     List<Bags>? bags = bagsList?.map((i) => Bags.fromJson(i)).toList();
-    var containersList = json['containers'] as List?;
+    final containersList = json['containers'] as List?;
     List<Containers>? containers =
         containersList?.map((i) => Containers.fromJson(i)).toList();
+    final Map<String, dynamic> zone = json['zone'];
     return Customer(
       id: json['id'],
       name: json['full_name'],
       phone: json['phone'],
       state: Wilaya.fromJson(json['state']),
-      zone: json['zone'],
+      zone: zone['zone'],
       bags: bags,
       containers: containers,
       oliveType: json['olive_type'],

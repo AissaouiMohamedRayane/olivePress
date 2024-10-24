@@ -406,7 +406,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                 .start,
                                                         children: [
                                                           const Text(
-                                                            'الرقم',
+                                                            'الهاتف',
                                                             style: TextStyle(
                                                                 fontSize: 16,
                                                                 fontFamily:
@@ -442,7 +442,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                         _phone !=
                                                                             null
                                                                     ? null
-                                                                    : 'أدخل الرقم ',
+                                                                    : 'أدخل رقم الهاتف ',
                                                                 labelStyle: const TextStyle(
                                                                     fontSize:
                                                                         14,
@@ -502,227 +502,281 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                 const SizedBox(
                                                   height: 20,
                                                 ),
-                                                const Text(
-                                                  'الولاية',
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontFamily: 'Poppins',
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.black),
-                                                ),
-                                                const SizedBox(
-                                                  height: 4,
-                                                ),
-                                                TypeAheadField(
-                                                  controller: _stateController,
-                                                  focusNode: _stateFocusNode,
-                                                  suggestionsCallback:
-                                                      (pattern) async {
-                                                    return statesProvider
-                                                        .states!
-                                                        .where((state) =>
-                                                            // Convert both state name and pattern to lowercase for case-insensitive matching
-                                                            state.name
-                                                                .toString()
-                                                                .toLowerCase()
-                                                                .contains(pattern
-                                                                    .toLowerCase()))
-                                                        .toList();
-                                                  },
-                                                  builder: (context,
-                                                      suppController,
-                                                      focusNode) {
-                                                    return TextFormField(
-                                                      keyboardType:
-                                                          TextInputType.text,
-                                                      // validator: (value) => value!.isEmpty
-                                                      //     ? 'Veuillez selectionner le nom du fournisseur du produit'
-                                                      //     : null,
-                                                      controller:
-                                                          suppController,
-
-                                                      focusNode: focusNode,
-                                                      onChanged: (value) {
-                                                        _state = null;
-                                                      },
-                                                      cursorColor: Colors.black,
-                                                      decoration:
-                                                          InputDecoration(
-                                                        labelText: _stateFocusNode
-                                                                    .hasFocus ||
-                                                                _state != null
-                                                            ? null
-                                                            : 'اختر ولاية ',
-                                                        labelStyle:
-                                                            const TextStyle(
-                                                                fontSize: 16,
-                                                                fontFamily:
-                                                                    'Poppins',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                color: Colors
-                                                                    .black),
-                                                        contentPadding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                          vertical: 5,
-                                                          horizontal: 20,
+                                                Row(children: [
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        const Text(
+                                                          'الولاية',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontFamily:
+                                                                  'Poppins',
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.black),
                                                         ),
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                                borderSide:
-                                                                    const BorderSide(
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10)),
-                                                        focusedBorder:
-                                                            OutlineInputBorder(
-                                                                borderSide:
-                                                                    const BorderSide(
-                                                                  color: Colors
-                                                                      .green,
-                                                                  width: 3,
-                                                                ),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10)),
-                                                      ),
-                                                    );
-                                                  },
-                                                  itemBuilder:
-                                                      (context, suggestion) {
-                                                    return ListTile(
-                                                      title:
-                                                          Text(suggestion.name),
-                                                    );
-                                                  },
-                                                  onSelected: (suggestion) {
-                                                    setState(() {
-                                                      _state = suggestion;
-                                                      _stateController.text =
-                                                          suggestion.name;
-                                                    });
-                                                  },
-                                                ),
-                                                const SizedBox(
-                                                  height: 20,
-                                                ),
-                                                const Text(
-                                                  'البلدية',
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontFamily: 'Poppins',
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.black),
-                                                ),
-                                                const SizedBox(
-                                                  height: 4,
-                                                ),
-                                                TextFormField(
-                                                  controller: _zoneController,
-                                                  focusNode: _zoneFocusNode,
-                                                  keyboardType:
-                                                      TextInputType.text,
-                                                  validator: (value) => value!
-                                                          .isEmpty
-                                                      ? 'الرجاء إدخال البلدية'
-                                                      : null,
-                                                  cursorColor: Colors.black,
-                                                  autovalidateMode:
-                                                      AutovalidateMode
-                                                          .onUserInteraction,
-                                                  decoration: InputDecoration(
-                                                    labelText: _zoneFocusNode
-                                                                .hasFocus ||
-                                                            _zone != null
-                                                        ? null
-                                                        : 'أدخل البلدية',
-                                                    labelStyle: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontFamily: 'Poppins',
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.black),
-                                                    contentPadding:
-                                                        const EdgeInsets
-                                                            .symmetric(
-                                                      vertical: 5,
-                                                      horizontal: 20,
-                                                    ),
-                                                    enabledBorder:
-                                                        OutlineInputBorder(
-                                                            borderSide:
-                                                                const BorderSide(
-                                                              color:
+                                                        const SizedBox(
+                                                          height: 4,
+                                                        ),
+                                                        TypeAheadField(
+                                                          controller:
+                                                              _stateController,
+                                                          focusNode:
+                                                              _stateFocusNode,
+                                                          suggestionsCallback:
+                                                              (pattern) async {
+                                                            return statesProvider
+                                                                .states!
+                                                                .where(
+                                                                    (state) =>
+                                                                        // Convert both state name and pattern to lowercase for case-insensitive matching
+                                                                        state
+                                                                            .name
+                                                                            .toString()
+                                                                            .toLowerCase()
+                                                                            .contains(pattern.toLowerCase()))
+                                                                .toList();
+                                                          },
+                                                          builder: (context,
+                                                              suppController,
+                                                              focusNode) {
+                                                            return TextFormField(
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .text,
+                                                              // validator: (value) => value!.isEmpty
+                                                              //     ? 'Veuillez selectionner le nom du fournisseur du produit'
+                                                              //     : null,
+                                                              controller:
+                                                                  suppController,
+
+                                                              focusNode:
+                                                                  focusNode,
+                                                              onChanged:
+                                                                  (value) {
+                                                                _state = null;
+                                                              },
+                                                              cursorColor:
                                                                   Colors.black,
-                                                            ),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                    focusedBorder:
-                                                        OutlineInputBorder(
-                                                            borderSide:
-                                                                const BorderSide(
-                                                              color:
-                                                                  Colors.green,
-                                                              width: 3,
-                                                            ),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText: _stateFocusNode
+                                                                            .hasFocus ||
+                                                                        _state !=
+                                                                            null
+                                                                    ? null
+                                                                    : 'اختر ولاية ',
+                                                                labelStyle: const TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Poppins',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    color: Colors
+                                                                        .black),
+                                                                contentPadding:
+                                                                    const EdgeInsets
+                                                                        .symmetric(
+                                                                  vertical: 5,
+                                                                  horizontal:
+                                                                      20,
+                                                                ),
+                                                                enabledBorder:
+                                                                    OutlineInputBorder(
+                                                                        borderSide:
+                                                                            const BorderSide(
+                                                                          color:
+                                                                              Colors.black,
+                                                                        ),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10)),
+                                                                focusedBorder:
+                                                                    OutlineInputBorder(
+                                                                        borderSide:
+                                                                            const BorderSide(
+                                                                          color:
+                                                                              Colors.green,
+                                                                          width:
+                                                                              3,
+                                                                        ),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10)),
+                                                              ),
+                                                            );
+                                                          },
+                                                          itemBuilder: (context,
+                                                              suggestion) {
+                                                            return ListTile(
+                                                              title: Text(
+                                                                  suggestion
+                                                                      .name),
+                                                            );
+                                                          },
+                                                          onSelected:
+                                                              (suggestion) {
+                                                            setState(() {
+                                                              _state =
+                                                                  suggestion;
+                                                              _stateController
+                                                                      .text =
+                                                                  suggestion
+                                                                      .name;
+                                                            });
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                  onChanged: (value) {
-                                                    if (value == "") {
-                                                      _zone = null;
-                                                    } else {
-                                                      _zone = value;
-                                                    }
-                                                  },
-                                                  onSaved: (value) =>
-                                                      _zone = value,
-                                                ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        const Text(
+                                                          'المنطقة',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontFamily:
+                                                                  'Poppins',
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 4,
+                                                        ),
+                                                        TextFormField(
+                                                          controller:
+                                                              _zoneController,
+                                                          focusNode:
+                                                              _zoneFocusNode,
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .text,
+                                                          validator: (value) =>
+                                                              value!.isEmpty
+                                                                  ? 'الرجاء إدخال المنطقة'
+                                                                  : null,
+                                                          cursorColor:
+                                                              Colors.black,
+                                                          autovalidateMode:
+                                                              AutovalidateMode
+                                                                  .onUserInteraction,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            labelText: _zoneFocusNode
+                                                                        .hasFocus ||
+                                                                    _zone !=
+                                                                        null
+                                                                ? null
+                                                                : 'أدخل المنطقة',
+                                                            labelStyle:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Poppins',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    color: Colors
+                                                                        .black),
+                                                            contentPadding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              vertical: 5,
+                                                              horizontal: 20,
+                                                            ),
+                                                            enabledBorder:
+                                                                OutlineInputBorder(
+                                                                    borderSide:
+                                                                        const BorderSide(
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                            focusedBorder:
+                                                                OutlineInputBorder(
+                                                                    borderSide:
+                                                                        const BorderSide(
+                                                                      color: Colors
+                                                                          .green,
+                                                                      width: 3,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                          ),
+                                                          onChanged: (value) {
+                                                            if (value == "") {
+                                                              _zone = null;
+                                                            } else {
+                                                              _zone = value;
+                                                            }
+                                                          },
+                                                          onSaved: (value) =>
+                                                              _zone = value,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ])
                                               ],
                                             ),
                                           ),
-                                          ListView.builder(
-                                            key: ValueKey(weightWidgetValue
-                                                .length), // Add a unique key based on itemCount
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(20)),
+                                                color: Colors.green[50]),
+                                            child: ListView.builder(
+                                              key: ValueKey(weightWidgetValue
+                                                  .length), // Add a unique key based on itemCount
 
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemCount: weightWidgetValue.length,
-                                            itemBuilder: (context, index) {
-                                              return Column(
-                                                children: [
-                                                  AddWeightWidget(
-                                                      onWeightValueChange:
-                                                          (value) =>
-                                                              _onWeightValueChange(
-                                                                  index, value),
-                                                      removeAddNewWeightWidget:
-                                                          index != 0
-                                                              ? removeAddNewWeightWidget
-                                                              : null,
-                                                      index: index,
-                                                      values: weightWidgetValue[
-                                                          index]), // Display AddWeightWidget
-                                                  const SizedBox(
-                                                      height:
-                                                          10), // Spacing between widgets
-                                                ],
-                                              );
-                                            },
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              itemCount:
+                                                  weightWidgetValue.length,
+                                              itemBuilder: (context, index) {
+                                                return AddWeightWidget(
+                                                    onWeightValueChange:
+                                                        (value) =>
+                                                            _onWeightValueChange(
+                                                                index, value),
+                                                    removeAddNewWeightWidget:
+                                                        index != 0
+                                                            ? removeAddNewWeightWidget
+                                                            : null,
+                                                    index: index,
+                                                    values: weightWidgetValue[
+                                                        index]); // Display AddWeightWidget
+                                                // Spacing between widgets
+                                              },
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
                                           ),
                                           Center(
                                             child: ElevatedButton(
@@ -1420,7 +1474,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         );
       }
     }
-    Navigator.pushReplacementNamed(context, '/');
+    // Navigator.pushReplacementNamed(context, '/');
   }
 
   @override

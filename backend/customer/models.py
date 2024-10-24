@@ -27,6 +27,13 @@ class States(models.Model):
         super(States, self).save(*args, **kwargs)
     class Meta:
         ordering = ['id'] 
+        
+class Zones(models.Model):
+    state = models.ForeignKey(States, verbose_name=_("state"), on_delete=models.CASCADE, related_name='zone_from_state')
+    zone=models.CharField(_("zone"), max_length=50, unique=True)
+    
+    def __str__(self):
+        return f"{self.state.id} : {self.zone} "
 
 class Customer(models.Model):
     GREEN = 1
@@ -51,7 +58,7 @@ class Customer(models.Model):
         validators=[RegexValidator(r'^\d{10}$', _('Phone number must be exactly 10 digits'))]
     )
     state = models.ForeignKey(States, verbose_name=_("state"), on_delete=models.CASCADE, related_name='customer_from_state')
-    zone=models.CharField(_("Zone"), max_length=30)
+    zone=models.ForeignKey(Zones, verbose_name=_("zone"), on_delete=models.CASCADE, related_name='customer_from_zone')
     days_gone=models.IntegerField(_("days gone by"), default=0)
     olive_type = models.IntegerField(choices=OLIVE_TYPE_CHOICES, null=True, blank=True)
     is_printed=models.BooleanField(_("is customer printed"), default=False)

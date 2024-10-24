@@ -24,3 +24,11 @@ class UserOliveTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewUser
         fields = ['olive_type']
+
+class ModifyUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewUser
+        fields = ['id', 'username', 'password']  # Include only fields you want to allow updating
+        extra_kwargs = {
+            'password': {'write_only': True},  # Password should not be returned in responses
+        }

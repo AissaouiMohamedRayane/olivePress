@@ -31,6 +31,8 @@ class CreateCustomerView(CreateAPIView):
 
             # Return a success response
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)  # Add this line
+
 
         # Return an error response if validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

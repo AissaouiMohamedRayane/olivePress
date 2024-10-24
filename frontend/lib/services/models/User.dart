@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../API/auth.dart';
+import '../API/user.dart';
 import '../sharedPreferences/prefsAuth.dart';
-import '../models/Company.dart';
-import 'package:provider/provider.dart';
 
 class User {
   final int id;
@@ -69,6 +68,20 @@ class UserProvider with ChangeNotifier {
     _isLoading = true;
     user = null;
     print('user');
+    notifyListeners();
+  }
+
+  Future<void> editUser(String? name, String? password) async {
+    final token = await getToken();
+    final bool ress =
+        await modifyUser(token, user, name: name, password: password);
+    if (ress) {
+      user = User(
+          username: name ?? user!.username,
+          id: user!.id,
+          isSuperUser: user!.isSuperUser,
+          isStaff: user!.isStaff);
+    }
     notifyListeners();
   }
 }

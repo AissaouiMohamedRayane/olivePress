@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/models/User.dart';
-import '../services/API/auth.dart';
 
 class InvitationCard extends StatefulWidget {
   InvitationCard({

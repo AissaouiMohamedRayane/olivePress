@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'EditUserPage.dart';
 import 'package:provider/provider.dart';
 
 import '../Layout/HomeLayout.dart';
@@ -97,7 +98,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return EditUserPage(userProvider: userProvider,);
+                                          }),
+                                        );
+                                      },
                                       style: ButtonStyle(
                                         backgroundColor:
                                             WidgetStateProperty.all<Color>(
@@ -220,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                     SizedBox(
                                       width: userProvider.user!.isSuperUser
-                                          ? 100
+                                          ? 120
                                           : 200,
                                       child: Column(
                                         crossAxisAlignment:

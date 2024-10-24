@@ -22,7 +22,6 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
   final FocusNode _bageWeightFocusNode = FocusNode();
   final TextEditingController _bagesNumberController = TextEditingController();
   final TextEditingController _bagesWeightController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
 
   void _onChanged() {
     widget
@@ -62,40 +61,30 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 135,
-      padding: const EdgeInsets.only(top: 20, right: 15, left: 15, bottom: 15),
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: Colors.green[50]),
+      height: widget.removeAddNewWeightWidget == null ? 100 : 70,
+      padding: const EdgeInsets.only(right: 15, left: 15),
       child: Stack(clipBehavior: Clip.none, children: [
-        widget.removeAddNewWeightWidget != null
-            ? Positioned(
-                top: -20,
-                left: -15,
-                child: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () =>
-                      widget.removeAddNewWeightWidget!(widget.index),
-                ),
-              )
-            : Container(),
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'العدد',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  if (widget.removeAddNewWeightWidget == null)
+                    const Text(
+                      'العدد',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
+                  if (widget.removeAddNewWeightWidget == null)
+                    const SizedBox(
+                      height: 4,
+                    ),
                   TextFormField(
                     controller: _bagesNumberController,
                     focusNode: _bagesNumberFocusNode,
@@ -151,17 +140,19 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'الوزن',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  if (widget.removeAddNewWeightWidget == null)
+                    const Text(
+                      'الوزن',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
+                  if (widget.removeAddNewWeightWidget == null)
+                    const SizedBox(
+                      height: 4,
+                    ),
                   TextFormField(
                       controller: _bagesWeightController,
                       focusNode: _bageWeightFocusNode,
@@ -211,6 +202,11 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                 ],
               ),
             ),
+            if (widget.removeAddNewWeightWidget != null)
+              IconButton(
+                icon: const Icon(Icons.delete, size: 25,),
+                onPressed: () => widget.removeAddNewWeightWidget!(widget.index),
+              ),
           ],
         ),
       ]),

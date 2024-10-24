@@ -42,7 +42,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(body: Builder(builder: (context) {
       // Get the height of the screen
       final double screenHeight = MediaQuery.of(context).size.height;
-      final double screenWidth = MediaQuery.of(context).size.width;
 
       return Container(
           decoration: const BoxDecoration(

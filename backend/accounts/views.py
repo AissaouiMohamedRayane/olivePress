@@ -12,9 +12,10 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView,
 from rest_framework.views import APIView
 from rest_framework import status
 
-from custom_permissions.permissions import IsSuperUser
-from .serializers import RegisterSerializer, RetrieveUserSerializer, UserOliveTypeSerializer
+from custom_permissions.permissions import IsSuperUser, IsActiveUser
+from .serializers import RegisterSerializer, RetrieveUserSerializer, UserOliveTypeSerializer, ModifyUserSerializer
 from .models import NewUser
+from django.contrib.auth.hashers import make_password
 
 
 
@@ -111,6 +112,7 @@ class ChangeUserOliveTypeView(UpdateAPIView):
     """
     queryset = NewUser.objects.all()
     serializer_class = UserOliveTypeSerializer
+    authentication_classes=[TokenAuthentication]
     permission_classes = [IsAuthenticated, IsSuperUser]  # Ensure only authenticated superusers can access
 
     def update(self, request, *args, **kwargs):
@@ -122,3 +124,38 @@ class ChangeUserOliveTypeView(UpdateAPIView):
             return Response({"detail": "Invalid olive type."}, status=status.HTTP_400_BAD_REQUEST)
         
         return super().update(request, *args, **kwargs)
+    
+class ModifyUser(UpdateAPIView):
+    queryset=NewUser.objects.all()
+    serializer_class = ModifyUserSerializer
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[IsAuthenticated, IsActiveUser]
+    def update(self, request, *args, **kwargs):
+        # Get the user's ID from the URL
+        id = self.kwargs.get('pk')
+
+        # Check if the authenticated user is the account holder
+        if request.user.id != int(id):
+            return Response({"detail": "You are not the account holder."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the user instance
+        user = self.get_object()
+
+        # Update the name if provided
+        username = request.data.get('username')
+        if username:
+            user.username = username
+
+        # Update the password if provided
+        password = request.data.get('password')
+        if password:
+            user.password = make_password(password)  # Hash the password
+
+        # Save the updated user
+        user.save()
+
+        # Serialize the updated user and return the response
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    

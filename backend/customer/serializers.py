@@ -4,9 +4,18 @@ from django.db import transaction
 
 # Inline serializer for Bags
 class BagSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)    
     class Meta:
         model = Bag
-        fields = ['weight', 'number']
+        fields = [ 'id', 'weight', 'number']
+    def create(self, validated_data):
+        # Remove the 'id' from validated_data before creating a new instance
+        validated_data.pop('id', None)  # This will ensure 'id' is not used during creation
+        return super().create(validated_data)
+    def update(self, instance, validated_data):
+        # Optionally, handle 'id' in the same way during updates
+        validated_data.pop('id', None)  # Ensure 'id' is not used during update
+        return super().update(instance, validated_data)
 
 # Inline serializer for Containers
 class ContainerSerializer(serializers.ModelSerializer):
@@ -29,7 +38,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     state = serializers.PrimaryKeyRelatedField(
         queryset=States.objects.all()
     )  # Include nested serializer for state details.
-    zone = serializers.CharField(max_length=50)
+    zone = serializers.CharField(max_length=70)
 
 
     class Meta:
@@ -48,12 +57,12 @@ class CustomerSerializer(serializers.ModelSerializer):
 
         zone, created = Zones.objects.get_or_create(zone=zone_name, state_id = state_id)  # Create or get the zone
         validated_data['zone'] = zone  # Set the zone instance in validated_data
-        print(validated_data)
         # Now create the customer with the validated data (excluding bags and containers)
         customer = Customer.objects.create(**validated_data)
 
         # Create related Bag instances, associating them with the customer
         for bag_data in bags_data:
+            bag_data.pop('id')
             Bag.objects.create(customer=customer, **bag_data)
 
         # Create related Container instances, associating them with the customer
@@ -62,6 +71,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
         return customer
     def update(self, instance, validated_data):
+        print(validated_data)
+
     # Extract bags, containers, and zone data from the validated data
         bags_data = validated_data.pop('bags', [])
         containers_data = validated_data.pop('containers', [])
@@ -85,11 +96,29 @@ class CustomerSerializer(serializers.ModelSerializer):
                 instance.zone = zone
 
             instance.save()
+            new_bag_ids = [bag_data.get('id') for bag_data in bags_data if 'id' in bag_data]  # Set of new bag IDs
+            
+        
+            # Delete bags that are not in the new bags list
+            for bag in instance.bags.all():
+                
+                if bag.id not in new_bag_ids:
+                    print('deleted')
+                    bag.delete()
 
             # Update bags: delete old ones and recreate for simplicity
-            instance.bags.all().delete()
+            existing_bags = {bag.id: bag for bag in instance.bags.all()}  # Keep track of existing bags by ID
             for bag_data in bags_data:
-                Bag.objects.create(customer=instance, **bag_data)
+                bag_id = bag_data.get('id')  # Assume each bag_data dict has an 'id' field
+                if bag_id and bag_id in existing_bags:
+                    # Update existing bag
+                    for attr, value in bag_data.items():
+                        setattr(existing_bags[bag_id], attr, value)
+                    existing_bags[bag_id].save()  # Save the updated bag
+                else:
+                    # Create a new bag if it doesn't exist
+                    bag_data.pop('id')
+                    Bag.objects.create(customer=instance, **bag_data)
 
             # Update containers: delete old ones and recreate for simplicity
             instance.containers.all().delete()

@@ -73,7 +73,8 @@ class Bag(models.Model):
     number = models.IntegerField(_("bags number"))
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='bags', null=True)
     def __str__(self):
-        return f"{self.customer.full_name}: nombre {self.number}"
+        return f"id: {self.pk} {self.customer.full_name}: nombre {self.number}"
+    
 
 class Container(models.Model):
     number = models.IntegerField(_("containers number"))

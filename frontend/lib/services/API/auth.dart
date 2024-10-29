@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import '../sharedPreferences/prefsAuth.dart';
 
 //mouaadh
-// const String url = 'http://192.168.95.245:8000';
+const String url = 'http://192.168.95.245:8000';
 
 //moi
-const String url = 'http://192.168.106.183:8000';
+// const String url = 'http://192.168.106.183:8000';
 
 Future<bool> login(String username, String password) async {
   try {

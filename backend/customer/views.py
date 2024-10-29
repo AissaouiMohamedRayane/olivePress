@@ -1,14 +1,13 @@
 from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Customer, States
+from .models import Customer, States, Zones
 from .models import States
 from django.shortcuts import get_object_or_404
 
-from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer, CustomerCancelSerializer
+from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer, ZonesSerializer
 
 from custom_permissions.permissions import IsActiveUser
 
@@ -133,3 +132,16 @@ class CustomerSearchView(ListAPIView):
                 queryset = queryset.filter(full_name__icontains=name_or_id)
 
         return queryset
+    
+class ListZones(ListAPIView):
+    serializer_class = ZonesSerializer
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[ IsActiveUser]
+    
+    def get_queryset(self):
+        state = self.kwargs.get('pk')
+        queryset = Zones.objects.filter(state = state)
+       
+
+        return queryset
+    

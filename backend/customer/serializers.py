@@ -20,7 +20,7 @@ class StatesSerializer(serializers.ModelSerializer):
 class ZonesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zones
-        fields = ['zone']
+        fields = ['id', 'zone']
 
 class CustomerSerializer(serializers.ModelSerializer):
     # Define nested serializers

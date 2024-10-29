@@ -12,7 +12,7 @@ import 'screens/addCompanyPage.dart';
 import './services/models/Company.dart';
 import './services/models/Token.dart';
 import './services/models/User.dart';
-import './services/models/Customer.dart';
+import './services/models/Locations.dart';
 
 import './services/API/auth.dart';
 

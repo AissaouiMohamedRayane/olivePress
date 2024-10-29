@@ -39,7 +39,6 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
     _bagesWeightController.text = widget.values['weight'] != null
         ? widget.values['weight'].toString()
         : '';
-
     // Listen for focus changes
     _bagesNumberFocusNode.addListener(() {
       setState(() {});
@@ -74,7 +73,7 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                 children: [
                   if (widget.removeAddNewWeightWidget == null)
                     const Text(
-                      'العدد',
+                      'الصناديق',
                       style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Poppins',
@@ -97,7 +96,7 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                       labelText:
                           _bagesNumberFocusNode.hasFocus || _bagesNumber != null
                               ? null
-                              : 'عدد الحقائب',
+                              : 'عدد الصناديق',
                       labelStyle: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Poppins',
@@ -162,12 +161,13 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
                           : int.parse(value) < 1
                               ? 'يجب أن تكون القيمة > 0'
                               : null,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       cursorColor: Colors.black,
                       decoration: InputDecoration(
                         labelText:
                             _bageWeightFocusNode.hasFocus || _bageWeight != null
                                 ? null
-                                : "وزن الحقيبة",
+                                : "وزن الصناديق",
                         labelStyle: const TextStyle(
                             fontSize: 14,
                             fontFamily: 'Poppins',
@@ -204,7 +204,10 @@ class _AddWeightWidgetState extends State<AddWeightWidget> {
             ),
             if (widget.removeAddNewWeightWidget != null)
               IconButton(
-                icon: const Icon(Icons.delete, size: 25,),
+                icon: const Icon(
+                  Icons.delete,
+                  size: 25,
+                ),
                 onPressed: () => widget.removeAddNewWeightWidget!(widget.index),
               ),
           ],

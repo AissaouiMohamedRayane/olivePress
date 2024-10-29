@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import '../sharedPreferences/prefsAuth.dart';
-import '../API/customer.dart';
+import './Locations.dart';
 
 class Bags {
   final int? weight;
@@ -114,42 +112,5 @@ class Customer {
       'cancel_reason': cancelReason,
       'is_active': isActive
     };
-  }
-}
-
-class Wilaya {
-  final int id;
-  final String name;
-  Wilaya({required this.id, required this.name});
-
-  factory Wilaya.fromJson(Map<String, dynamic> json) {
-    return Wilaya(
-      id: json['id'],
-      name: json['state'],
-    );
-  }
-
-  // Method to convert a Company object to a JSON map
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
-}
-
-class StatesProvider extends ChangeNotifier {
-  List<Wilaya>? states;
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  StatesProvider() {
-    _initializeStates();
-  }
-  Future<void> _initializeStates() async {
-    final token = await getToken();
-    states = await getStates(token);
-    _isLoading = false;
-    notifyListeners();
   }
 }

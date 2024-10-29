@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/API/customer.dart';
+import 'package:frontend/services/API/locations.dart';
 import 'package:frontend/services/models/User.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -19,6 +20,7 @@ import '../components/PaymentReceipt.dart';
 import '../services/models/Company.dart';
 import '../services/models/Customer.dart';
 import '../services/models/Token.dart';
+import '../services/models/Locations.dart';
 
 class AddCustomerPage extends StatefulWidget {
   final Customer? customer;
@@ -55,6 +57,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       weightWidgetValue[index] = value;
       _totalWeight = weightWidgetValue
           .map((value) => (value['weight'] ?? 0))
+          .reduce((a, b) => a + b);
+      _totalbags = weightWidgetValue
+          .map((value) => (value['number'] ?? 0))
           .reduce((a, b) => a + b);
     });
   }
@@ -117,14 +122,28 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         false;
   }
 
+  Future<void> _fetchZones(String token, String state) async {
+    // Access your provider and call getZones here
+    final List<String>? zones = await getZones(token, state);
+
+    // You can update the state if needed
+    setState(() {
+      _zonesList = zones;
+    });
+  }
+
+  // Rest of your widget code...
+
   String? _name;
   String? _phone;
   Wilaya? _state;
   String? _zone;
+  List<String>? _zonesList;
   int? _containersNumber;
   int? _containerCapacity;
   int? _daysGone;
   int _totalWeight = 0;
+  int _totalbags = 0;
   int _totalSum = 1;
 
   List<Map<String, int?>> weightWidgetValue = [
@@ -228,8 +247,17 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           });
           _totalWeight = _totalWeight + bag.weight!;
         });
+        widget.customer!.bags!.forEach((bag) {
+          weightWidgetValue.add({
+            'number': bag.number,
+            'weight': bag.weight,
+          });
+          _totalbags = _totalWeight + bag.number!;
+        });
       }
     }
+    _fetchZones(Provider.of<TokenProvider>(context, listen: false).token!,
+        _state!.id.toString());
   }
 
   @override
@@ -435,6 +463,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                       : null,
                                                               cursorColor:
                                                                   Colors.black,
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
                                                               decoration:
                                                                   InputDecoration(
                                                                 labelText: _phoneFocusNode
@@ -550,17 +581,34 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                               keyboardType:
                                                                   TextInputType
                                                                       .text,
-                                                              // validator: (value) => value!.isEmpty
-                                                              //     ? 'Veuillez selectionner le nom du fournisseur du produit'
-                                                              //     : null,
+                                                              validator: (value) =>
+                                                                  value!.isEmpty ||
+                                                                          _state ==
+                                                                              null
+                                                                      ? 'الرجاء اختيار الولاية'
+                                                                      : null,
                                                               controller:
                                                                   suppController,
-
                                                               focusNode:
                                                                   focusNode,
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
                                                               onChanged:
                                                                   (value) {
                                                                 _state = null;
+                                                                setState(() {
+                                                                  _zonesList =
+                                                                      null;
+                                                                  _zone = null;
+                                                                  _zoneController
+                                                                          .text =
+                                                                      'a';
+                                                                  _zoneController
+                                                                      .text = '';
+                                                                  _zoneFocusNode
+                                                                      .unfocus();
+                                                                });
                                                               },
                                                               cursorColor:
                                                                   Colors.black,
@@ -621,8 +669,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                             );
                                                           },
                                                           onSelected:
-                                                              (suggestion) {
+                                                              (suggestion) async {
+                                                            await _fetchZones(
+                                                                tokenProvider
+                                                                    .token!,
+                                                                suggestion.id
+                                                                    .toString());
                                                             setState(() {
+                                                              _zoneController
+                                                                  .text = '';
                                                               _state =
                                                                   suggestion;
                                                               _stateController
@@ -659,33 +714,62 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                         const SizedBox(
                                                           height: 4,
                                                         ),
-                                                        TextFormField(
+                                                        TypeAheadField(
                                                           controller:
                                                               _zoneController,
                                                           focusNode:
                                                               _zoneFocusNode,
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          validator: (value) =>
-                                                              value!.isEmpty
-                                                                  ? 'الرجاء إدخال المنطقة'
-                                                                  : null,
-                                                          cursorColor:
-                                                              Colors.black,
-                                                          autovalidateMode:
-                                                              AutovalidateMode
-                                                                  .onUserInteraction,
-                                                          decoration:
-                                                              InputDecoration(
-                                                            labelText: _zoneFocusNode
-                                                                        .hasFocus ||
-                                                                    _zone !=
-                                                                        null
-                                                                ? null
-                                                                : 'أدخل المنطقة',
-                                                            labelStyle:
-                                                                const TextStyle(
+                                                          suggestionsCallback:
+                                                              (pattern) async {
+                                                            return _zonesList
+                                                                ?.where((zone) => zone
+                                                                    .toLowerCase()
+                                                                    .contains(
+                                                                        pattern
+                                                                            .toLowerCase()))
+                                                                .toList();
+                                                          },
+                                                          builder: (context,
+                                                              suppController,
+                                                              focusNode) {
+                                                            return TextFormField(
+                                                              enabled:
+                                                                  _state == null
+                                                                      ? false
+                                                                      : true,
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .text,
+                                                              validator: (value) =>
+                                                                  value!.isEmpty
+                                                                      ? 'الرجاء اختيار المنطقة'
+                                                                      : null,
+                                                              controller:
+                                                                  suppController,
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
+                                                              focusNode:
+                                                                  focusNode,
+                                                              onChanged:
+                                                                  (value) {
+                                                                if (value ==
+                                                                    '') {
+                                                                  _zone = null;
+                                                                }
+                                                                _zone = value;
+                                                              },
+                                                              cursorColor:
+                                                                  Colors.black,
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText: _zoneFocusNode
+                                                                            .hasFocus ||
+                                                                        _zone !=
+                                                                            null
+                                                                    ? null
+                                                                    : 'اختر المنطقة ',
+                                                                labelStyle: const TextStyle(
                                                                     fontSize:
                                                                         16,
                                                                     fontFamily:
@@ -695,43 +779,53 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                                             .w500,
                                                                     color: Colors
                                                                         .black),
-                                                            contentPadding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                              vertical: 5,
-                                                              horizontal: 20,
-                                                            ),
-                                                            enabledBorder:
-                                                                OutlineInputBorder(
-                                                                    borderSide:
-                                                                        const BorderSide(
-                                                                      color: Colors
-                                                                          .black,
-                                                                    ),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            10)),
-                                                            focusedBorder:
-                                                                OutlineInputBorder(
-                                                                    borderSide:
-                                                                        const BorderSide(
-                                                                      color: Colors
-                                                                          .green,
-                                                                      width: 3,
-                                                                    ),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            10)),
-                                                          ),
-                                                          onChanged: (value) {
-                                                            if (value == "") {
-                                                              _zone = null;
-                                                            } else {
-                                                              _zone = value;
-                                                            }
+                                                                contentPadding:
+                                                                    const EdgeInsets
+                                                                        .symmetric(
+                                                                  vertical: 5,
+                                                                  horizontal:
+                                                                      20,
+                                                                ),
+                                                                enabledBorder:
+                                                                    OutlineInputBorder(
+                                                                        borderSide:
+                                                                            const BorderSide(
+                                                                          color:
+                                                                              Colors.black,
+                                                                        ),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10)),
+                                                                focusedBorder:
+                                                                    OutlineInputBorder(
+                                                                        borderSide:
+                                                                            const BorderSide(
+                                                                          color:
+                                                                              Colors.green,
+                                                                          width:
+                                                                              3,
+                                                                        ),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10)),
+                                                              ),
+                                                            );
                                                           },
-                                                          onSaved: (value) =>
-                                                              _zone = value,
+                                                          itemBuilder: (context,
+                                                              suggestion) {
+                                                            return ListTile(
+                                                              title: Text(
+                                                                  suggestion),
+                                                            );
+                                                          },
+                                                          onSelected:
+                                                              (suggestion) {
+                                                            setState(() {
+                                                              _zone =
+                                                                  suggestion;
+                                                              _zoneController
+                                                                      .text =
+                                                                  suggestion;
+                                                            });
+                                                          },
                                                         ),
                                                       ],
                                                     ),
@@ -801,7 +895,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                 )),
                                           ),
                                           Text(
-                                              'الوزن الإجمالي : $_totalWeight'),
+                                              'الإجمالي : $_totalbags صناديق = $_totalWeight'),
                                           const SizedBox(
                                             height: 20,
                                           ),
@@ -964,6 +1058,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                               _containerCapacityFocusNode,
                                                           cursorColor:
                                                               Colors.black,
+                                                          autovalidateMode:
+                                                              AutovalidateMode
+                                                                  .onUserInteraction,
                                                           validator: (value) =>
                                                               value!.isEmpty
                                                                   ? 'الرجاء سعة الاوعية'
@@ -1217,6 +1314,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                     File tempFile =
                                                         await generatePdf(
                                                             companyProvider,
+                                                            userProvider,
                                                             customer,
                                                             _totalSum,
                                                             pdf);
@@ -1376,7 +1474,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                               onPressed: () async {
                                                 await _submitForm(
                                                     tokenProvider.token!,
-                                                    companyProvider);
+                                                    companyProvider,
+                                                    userProvider);
                                               },
                                               style: ButtonStyle(
                                                 backgroundColor:
@@ -1419,8 +1518,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                         ]))));
   }
 
-  Future<void> _submitForm(
-      String token, CompanyProvider companyProvider) async {
+  Future<void> _submitForm(String token, CompanyProvider companyProvider,
+      UserProvider userProvider) async {
     Customer customer = _customer!;
     if (widget.customer == null) {
       int? ress = await AddCustomer(token, customer);
@@ -1434,7 +1533,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             backgroundColor: Colors.green,
           ),
         );
-        await generatePdf(companyProvider, _customer!, _totalSum, pdf2, ress);
+        await generatePdf(
+            companyProvider, userProvider, _customer!, _totalSum, pdf2, ress);
         await printPdf(token, ress);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1459,8 +1559,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             backgroundColor: Colors.green,
           ),
         );
-        await generatePdf(
-            companyProvider, _customer!, _totalSum, pdf2, widget.customer!.id);
+        await generatePdf(companyProvider, userProvider, _customer!, _totalSum,
+            pdf2, widget.customer!.id);
         await printPdf(token, widget.customer!.id);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

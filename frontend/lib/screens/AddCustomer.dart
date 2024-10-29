@@ -151,6 +151,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
   List<Map<String, int?>> weightWidgetValue = [
     {
+      'id': 0,
       'number': null,
       'weight': null,
     }

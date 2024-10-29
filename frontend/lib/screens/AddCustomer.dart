@@ -40,6 +40,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   void _addNewWeightWidget() {
     setState(() {
       weightWidgetValue.add({
+        'id': 0,
         'number': null,
         'weight': null,
       });
@@ -54,6 +55,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
   void _onWeightValueChange(int index, Map<String, int?> value) {
     setState(() {
+      value['id'] = weightWidgetValue[index]['id']; // Set the 'id'
+      print(value);
       weightWidgetValue[index] = value;
       _totalWeight = weightWidgetValue
           .map((value) => (value['weight'] ?? 0))
@@ -242,16 +245,11 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         weightWidgetValue = [];
         widget.customer!.bags!.forEach((bag) {
           weightWidgetValue.add({
+            'id': bag.id,
             'number': bag.number,
             'weight': bag.weight,
           });
           _totalWeight = _totalWeight + bag.weight!;
-        });
-        widget.customer!.bags!.forEach((bag) {
-          weightWidgetValue.add({
-            'number': bag.number,
-            'weight': bag.weight,
-          });
           _totalbags = _totalWeight + bag.number!;
         });
       }
@@ -1574,7 +1572,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         );
       }
     }
-    // Navigator.pushReplacementNamed(context, '/');
+    Navigator.pushReplacementNamed(context, '/');
   }
 
   @override

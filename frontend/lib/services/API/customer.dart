@@ -131,7 +131,10 @@ Future<List<Customer>> searchCustomers(String? token, String query) async {
     if (response.statusCode == 200) {
       // Parse the response body into a list of Customer objects
       final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-      return data.map((json) => Customer.fromJson(json)).toList();
+      List<Customer> customers =
+          data.map((json) => Customer.fromJson(json)).toList();
+      print(customers[0].bags);
+      return customers;
     } else {
       print('Failed to fetch customers: ${response.statusCode}');
       print('Error: ${response.body}');

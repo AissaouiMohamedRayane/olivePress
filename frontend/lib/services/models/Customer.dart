@@ -1,13 +1,15 @@
 import './Locations.dart';
 
 class Bags {
+  final int? id;
   final int? weight;
   final int? number;
 
-  Bags({required this.weight, required this.number});
+  Bags({this.id = 0, required this.weight, required this.number});
 
   factory Bags.fromJson(Map<String, dynamic> json) {
     return Bags(
+      id: json['id'],
       weight: json['weight'],
       number: json['number'],
     );
@@ -16,6 +18,7 @@ class Bags {
   // Method to convert a Company object to a JSON map
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'weight': weight,
       'number': number,
     };

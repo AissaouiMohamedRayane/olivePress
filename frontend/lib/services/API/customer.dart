@@ -28,8 +28,7 @@ Future<int?> AddCustomer(String? token, Customer customer) async {
       // Check for '201 Created'
       // Company creation was successful
       final data = jsonDecode(response.body);
-      print('rayane0');
-      print(data); // Decode the JSON response
+      
       final newCustomerId =
           data['id']; // Parse the response body to get the created company's ID
       // Assuming the ID is returned as 'id'
@@ -143,5 +142,39 @@ Future<List<Customer>> searchCustomers(String? token, String query) async {
   } catch (e) {
     print('An error occurred: $e');
     return [];
+  }
+}
+
+Future<List<Bags>?> listBags(String? token, String customerID) async {
+  
+  if (token == null) {
+    return null;
+  }
+  try {
+    final response = await http.get(
+      Uri.parse('$url/customer/list_bags/$customerID'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'token $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // The login was successful
+      final List<dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
+
+      // Save the token for future API requests (e.g., using shared_preferences)
+      return responseData.map((bag) =>  Bags.fromJson(bag)).toList();
+    } else if (response.statusCode == 401) {
+      // The login failed
+      print('fetching company failed with status: ${response.statusCode}');
+      print('Error: ${response.body}');
+      return null;
+    }
+    return null;
+  } catch (e) {
+    print('An error occurred: $e');
+    return null;
   }
 }

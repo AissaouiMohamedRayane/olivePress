@@ -90,6 +90,7 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
     });
 
     if (widget.editCompany != null) {
+      enabeld = true;
       _name = widget.editCompany!.name;
       _nameController.text = widget.editCompany!.name;
 

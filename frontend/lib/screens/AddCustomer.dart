@@ -99,6 +99,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     }
   }
 
+  Future<void> printBagsPdf() async {
+    try {
+      await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async =>
+            pdfBags.save(), // Replace with actual PDF data
+      );
+    } catch (e) {}
+  }
+
   Future<bool> _showPrintConfirmationDialog() async {
     // Show a dialog asking the user if they printed the document
     // Implement this using your preferred method of showing dialogs in Flutter
@@ -162,9 +171,12 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
   var pdf = pw.Document();
   final pdf2 = pw.Document();
+  final pdfBags = pw.Document();
   // Store the generated PDF file
 
   Customer? _customer;
+
+  bool disabledButton = false;
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
@@ -1471,10 +1483,16 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                           Expanded(
                                             child: ElevatedButton(
                                               onPressed: () async {
-                                                await _submitForm(
-                                                    tokenProvider.token!,
-                                                    companyProvider,
-                                                    userProvider);
+                                                if (!disabledButton) {
+                                                  disabledButton = true;
+                                                  await _submitForm(
+                                                      tokenProvider.token!,
+                                                      companyProvider,
+                                                      userProvider);
+                                                  Navigator
+                                                      .pushReplacementNamed(
+                                                          context, '/');
+                                                }
                                               },
                                               style: ButtonStyle(
                                                 backgroundColor:
@@ -1532,9 +1550,12 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             backgroundColor: Colors.green,
           ),
         );
+        List<Bags>? bags = await listBags(token, ress.toString());
         await generatePdf(
             companyProvider, userProvider, _customer!, _totalSum, pdf2, ress);
+        await generateBagsPdf(bags!, pdfBags, ress, customer);
         await printPdf(token, ress);
+        await printBagsPdf();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1547,7 +1568,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         );
       }
     } else {
-      bool ress = await UpdateCustomer(token, widget.customer!.id!, customer);
+      final bool ress =
+          await UpdateCustomer(token, widget.customer!.id!, customer);
       if (ress) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1558,9 +1580,13 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             backgroundColor: Colors.green,
           ),
         );
-        await generatePdf(companyProvider, userProvider, _customer!, _totalSum,
+        List<Bags>? bags =
+            await listBags(token, widget.customer!.id!.toString());
+        await generatePdf(companyProvider, userProvider, customer, _totalSum,
             pdf2, widget.customer!.id);
+        await generateBagsPdf(bags!, pdfBags, customer.id!, customer);
         await printPdf(token, widget.customer!.id);
+        await printBagsPdf();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1573,7 +1599,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         );
       }
     }
-    Navigator.pushReplacementNamed(context, '/');
   }
 
   @override

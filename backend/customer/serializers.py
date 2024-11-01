@@ -71,7 +71,6 @@ class CustomerSerializer(serializers.ModelSerializer):
 
         return customer
     def update(self, instance, validated_data):
-        print(validated_data)
 
     # Extract bags, containers, and zone data from the validated data
         bags_data = validated_data.pop('bags', [])

@@ -7,7 +7,7 @@ from .models import Customer, States, Zones
 from .models import States
 from django.shortcuts import get_object_or_404
 
-from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer, ZonesSerializer
+from .serializers import CustomerSerializer, StatesSerializer, CustomerListSerializer, ZonesSerializer, BagSerializer
 
 from custom_permissions.permissions import IsActiveUser
 
@@ -144,3 +144,15 @@ class ListZones(ListAPIView):
 
         return queryset
     
+class ListBags(ListAPIView):
+    serializer_class=BagSerializer
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[IsActiveUser]
+    def get_queryset(self):
+        customer_id = self.kwargs.get('pk')
+        customer = get_object_or_404(Customer, pk=customer_id)
+        if self.request.user.olive_type == customer.olive_type:
+              
+            return customer.bags.all() 
+        
+        return Response({'response': "not your olive type"}, status=status.HTTP_401_UNAUTHORIZED)    

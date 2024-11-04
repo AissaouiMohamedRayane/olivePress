@@ -61,7 +61,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       _totalWeight = weightWidgetValue
           .map((value) => (value['weight'] ?? 0))
           .reduce((a, b) => a + b);
-      _totalbags = weightWidgetValue
+      _totalBags = weightWidgetValue
           .map((value) => (value['number'] ?? 0))
           .reduce((a, b) => a + b);
     });
@@ -82,17 +82,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         );
 
         // Show a dialog to confirm if the user completed the printing
-        bool didPrint = await _showPrintConfirmationDialog();
-        if (didPrint) {
-          bool success = await setCustomerPrinted(token, customerId);
-          if (success) {
-            print('Customer printed status updated to true.');
-          } else {
-            print('Failed to update the customer printed status.');
-          }
-        } else {
-          print('User indicated that the document was not printed.');
-        }
       } catch (e) {
         print('An error occurred during PDF printing: $e');
       }
@@ -155,7 +144,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   int? _containerCapacity;
   int? _daysGone;
   int _totalWeight = 0;
-  int _totalbags = 0;
+  int _totalBags = 0;
   int _totalSum = 1;
 
   List<Map<String, int?>> weightWidgetValue = [
@@ -263,7 +252,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             'weight': bag.weight,
           });
           _totalWeight = _totalWeight + bag.weight!;
-          _totalbags = _totalWeight + bag.number!;
+          _totalBags = _totalBags + bag.number!;
         });
       }
     }
@@ -906,7 +895,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                                 )),
                                           ),
                                           Text(
-                                              'الإجمالي : $_totalbags صناديق = $_totalWeight'),
+                                              'الإجمالي : $_totalBags صناديق = $_totalWeight كغ'),
                                           const SizedBox(
                                             height: 20,
                                           ),
@@ -1550,10 +1539,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             backgroundColor: Colors.green,
           ),
         );
-        List<Bags>? bags = await listBags(token, ress.toString());
+        // List<Bags>? bags = await listBags(token, ress.toString());
         await generatePdf(
             companyProvider, userProvider, _customer!, _totalSum, pdf2, ress);
-        await generateBagsPdf(bags!, pdfBags, ress, customer);
+        await generateBagsPdf(customer.containers![0], pdfBags, ress, customer);
         await printPdf(token, ress);
         await printBagsPdf();
       } else {
@@ -1574,17 +1563,18 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              ' updated successfully.',
+              ' تم التحديث بنجاح.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.green,
           ),
         );
-        List<Bags>? bags =
-            await listBags(token, widget.customer!.id!.toString());
+        // List<Bags>? bags =
+        //     await listBags(token, widget.customer!.id!.toString());
         await generatePdf(companyProvider, userProvider, customer, _totalSum,
             pdf2, widget.customer!.id);
-        await generateBagsPdf(bags!, pdfBags, customer.id!, customer);
+        await generateBagsPdf(
+            customer.containers![0], pdfBags, customer.id!, customer);
         await printPdf(token, widget.customer!.id);
         await printBagsPdf();
       } else {

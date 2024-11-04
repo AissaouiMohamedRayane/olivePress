@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 import '../models/Locations.dart';
 
 //mouaadh
-const String url = 'http://192.168.95.245:8000';
+// const String url = 'http://192.168.95.245:8000';
 
 //moi
-// const String url = 'http://192.168.106.183:8000';
+const String url = 'http://192.168.70.200:8000';
 
 Future<List<Wilaya>?> getStates(String? token) async {
   if (token == null) {

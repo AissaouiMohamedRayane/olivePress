@@ -409,61 +409,60 @@ Future<File> generatePdf(CompanyProvider companyProvider,
 }
 
 Future<void> generateBagsPdf(
-    List<Bags> bags, pw.Document pdf, int id, Customer customer) async {
+    Containers container, pw.Document pdf, int id, Customer customer) async {
   final arabicFont = await _loadArabicFont();
   final barcode = Barcode.code128();
-  final String oliveType = customer.oliveType == 1
-      ? 'vert'
-      : customer.oliveType == 2
-          ? 'rouge'
-          : 'noir';
-  for (Bags bag in bags) {
+
+  for (int i = 1; i <= container.number!; i++) {
+    final String oliveType = customer.oliveType == 1
+        ? 'vert'
+        : customer.oliveType == 2
+            ? 'rouge'
+            : 'noir';
     final String data =
-        '$id-${bag.number.toString().padLeft(6, '0')} $oliveType'; // Example EAN-13 code
+        '${id.toString().padLeft(5, '0')}-${i.toString().padLeft(2, '0')} $oliveType'; // Example EAN-13 code
 
     final svg = barcode.toSvg(
       data, width: 80, height: 20,
       drawText: false, // This removes the text under the barcode
     );
-    for (int i = 0; i < bag.number!; i++) {
-      pdf.addPage(pw.Page(
-          pageFormat:
-              PdfPageFormat(40 * PdfPageFormat.mm, 20 * PdfPageFormat.mm),
-          build: (pw.Context context) {
-            return pw.Padding(
-                padding: pw.EdgeInsets.all(4),
-                child: pw.Container(
-                    width: double.infinity,
-                    decoration: pw.BoxDecoration(
-                      color: PdfColors.white,
-                      border: pw.Border.all(
-                        color: PdfColors.black, // Border color
-                        width: 3.0, // Border width
-                      ),
+    pdf.addPage(pw.Page(
+        pageFormat: PdfPageFormat(40 * PdfPageFormat.mm, 20 * PdfPageFormat.mm),
+        build: (pw.Context context) {
+          return pw.Padding(
+              padding: pw.EdgeInsets.all(4),
+              child: pw.Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: pw.BoxDecoration(
+                    color: PdfColors.white,
+                    border: pw.Border.all(
+                      color: PdfColors.black, // Border color
+                      width: 3.0, // Border width
                     ),
-                    child: pw.Directionality(
-                        textDirection: pw.TextDirection.rtl,
-                        child: pw.Padding(
-                            padding: pw.EdgeInsets.all(4),
-                            child: pw.Column(children: [
-                              pw.SvgImage(svg: svg),
-                              pw.Row(
-                                  mainAxisAlignment:
-                                      pw.MainAxisAlignment.center,
-                                  children: [
-                                    pw.Text(bag.id!.toString().padLeft(6, '0'),
-                                        style: pw.TextStyle(
+                  ),
+                  child: pw.Directionality(
+                      textDirection: pw.TextDirection.rtl,
+                      child: pw.Padding(
+                          padding: pw.EdgeInsets.all(4),
+                          child: pw.Column(children: [
+                            pw.SvgImage(svg: svg),
+                            pw.Row(
+                                mainAxisAlignment: pw.MainAxisAlignment.center,
+                                children: [
+                                  pw.Text(
+                                      '${id.toString().padLeft(5, '0')}-${i.toString().padLeft(2, '0')}',
+                                      style: pw.TextStyle(
+                                        fontSize: 10,
+                                      )),
+                                  pw.SizedBox(width: 8),
+                                  pw.Text('خ',
+                                      style: pw.TextStyle(
+                                          font: arabicFont,
                                           fontSize: 10,
-                                        )),
-                                    pw.SizedBox(width: 10),
-                                    pw.Text('خ',
-                                        style: pw.TextStyle(
-                                            font: arabicFont,
-                                            fontSize: 10,
-                                            fontWeight: pw.FontWeight.normal)),
-                                  ])
-                            ])))));
-          }));
-    }
+                                          fontWeight: pw.FontWeight.normal)),
+                                ])
+                          ])))));
+        }));
   }
 }

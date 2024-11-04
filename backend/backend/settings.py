@@ -35,6 +35,7 @@ DEBUG = True
 
 INSTALLED_APPS = [
     #apps
+    'management',
     'custom_permissions',
     'accounts',
     'company',
@@ -158,4 +159,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-ALLOWED_HOSTS = ['localhost', '10.0.2.2', '192.168.215.183', '127.0.0.1', '192.168.95.245', '192.168.106.183']
+ALLOWED_HOSTS = ['localhost', '10.0.2.2', '192.168.215.183', '127.0.0.1', '192.168.95.245', '192.168.70.200']

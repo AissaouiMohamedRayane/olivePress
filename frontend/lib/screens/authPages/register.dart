@@ -36,6 +36,19 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'الرجاء إدخال كلمة المرور الخاصة بك';
+    }
+    if (value.length < 8) {
+      return 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'يجب أن تحتوي كلمة المرور على رقم واحد على الأقل';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Builder(builder: (context) {
@@ -144,9 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   _obscurePassword, // Hide password text
                               focusNode: _passwordFocusNode,
                               keyboardType: TextInputType.text,
-                              validator: (value) => value!.isEmpty
-                                  ? 'الرجاء إدخال كلمة المرور الخاصة بك'
-                                  : null,
+                              validator: validatePassword,
                               cursorColor: const Color(0xFF757575),
                               style: const TextStyle(
                                   color: Colors.white,

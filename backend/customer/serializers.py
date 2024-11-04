@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from .models import Customer, States, Bag, Container, Zones
+from accounts.models import NewUser
 from django.db import transaction
+from django.utils import timezone
+
 
 # Inline serializer for Bags
 class BagSerializer(serializers.ModelSerializer):
@@ -43,7 +46,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ['id', 'full_name', 'date_joined', 'phone', 'state', 'zone', 
+        fields = ['id','user', 'full_name', 'date_joined', 'phone', 'state', 'zone', 
             'bags', 'containers', 'olive_type', 'days_gone', 'is_printed','is_active', 'cancel_reason']
 
     def create(self, validated_data):
@@ -57,6 +60,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
         zone, created = Zones.objects.get_or_create(zone=zone_name, state_id = state_id)  # Create or get the zone
         validated_data['zone'] = zone  # Set the zone instance in validated_data
+        validated_data['user'] = self.context['request'].user
         # Now create the customer with the validated data (excluding bags and containers)
         customer = Customer.objects.create(**validated_data)
 
@@ -88,6 +92,14 @@ class CustomerSerializer(serializers.ModelSerializer):
             instance.is_printed = validated_data.get('is_printed', instance.is_printed)
             instance.is_active = validated_data.get('is_active', instance.is_active)
             instance.cancel_reason = validated_data.get('cancel_reason', instance.cancel_reason)
+            if validated_data.get('is_active'):
+                instance.modified = True
+                instance.modification_date = timezone.now()
+                instance.modification_user = self.context['request'].user
+            else:
+                instance.cancel_date = timezone.now()
+                instance.cancel_user = self.context['request'].user
+                
 
             # Handle zone update if new zone data is provided
             if zone_data:

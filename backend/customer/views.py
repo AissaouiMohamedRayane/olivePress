@@ -20,7 +20,9 @@ class CreateCustomerView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # Deserialize the incoming data
-        serializer = CustomerSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
+        serializer.context['request'] = request  # Set the request in the context
+
 
         # Validate the data
         if serializer.is_valid():
@@ -48,7 +50,8 @@ class ModifyCustomerView(UpdateAPIView):
 
         # Deserialize the incoming data into the existing customer instance
         serializer = self.get_serializer(customer, data=request.data)
-        print(request.data)
+        serializer.context['request'] = request  # Set the request in the context
+
 
         # Validate the data
         if serializer.is_valid():

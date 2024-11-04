@@ -59,6 +59,7 @@ class Command(BaseCommand):
             data2.append(bag_data)
 
             i += 1
+            j += 1
 
         # Create a DataFrame for the first sheet
         df = pd.DataFrame(data)

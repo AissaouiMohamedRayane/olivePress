@@ -6,9 +6,17 @@ import 'package:provider/provider.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'dart:io';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+
+import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
+import 'package:image/image.dart' as img;
+import 'package:permission_handler/permission_handler.dart';
+
+
+import 'dart:typed_data';
+import 'dart:convert';
 
 import '../screens/DeleteCustomer.dart';
 
@@ -53,6 +61,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     });
   }
 
+  Future<void> requestBluetoothPermissions() async {
+    await [
+      Permission.bluetooth,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.location
+    ].request();
+  }
+
   void _onWeightValueChange(int index, Map<String, int?> value) {
     setState(() {
       value['id'] = weightWidgetValue[index]['id']; // Set the 'id'
@@ -76,10 +93,16 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   Future<void> printPdf(String? token, int? customerId) async {
     if (customerId != null) {
       try {
-        await Printing.layoutPdf(
-          onLayout: (PdfPageFormat format) async =>
-              pdf2.save(), // Replace with actual PDF data
-        );
+        final pdfBytes = await pdf2.save();
+        final pdfPages = await Printing.raster(pdfBytes).toList();
+        List<BluetoothDevice> devices = await printer.getBondedDevices();
+        BluetoothDevice printerDevice = devices.first;
+        await printer.connect(printerDevice);
+        for (final page in pdfPages) {
+          final imageBytes = await page.toPng();
+          await printer.writeBytes(imageBytes);
+        }
+        printer.disconnect();
 
         // Show a dialog to confirm if the user completed the printing
       } catch (e) {
@@ -88,14 +111,129 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     }
   }
 
-  Future<void> printBagsPdf() async {
+  Future<void> printTest() async {
     try {
-      await Printing.layoutPdf(
-        onLayout: (PdfPageFormat format) async =>
-            pdfBags.save(), // Replace with actual PDF data
-      );
-    } catch (e) {}
+      List<BluetoothDevice> devices = await printer.getBondedDevices();
+      if (devices.isEmpty) {
+        throw Exception('No bonded Bluetooth devices found.');
+      }
+      BluetoothDevice printerDevice = devices.first;
+      await printer.connect(printerDevice);
+
+      final profile = await CapabilityProfile.load();
+      final generator = Generator(PaperSize.mm80, profile);
+
+      // Print a simple text message
+      final escPosCommands = generator.text('Hello, Printer!');
+      await printer.writeBytes(Uint8List.fromList(escPosCommands));
+
+      await printer.disconnect();
+      print('Printing completed successfully.');
+    } catch (e) {
+      print('Error: $e');
+    }
   }
+
+//Esc
+
+  Future<void> printBagsPdf() async {
+    var connected = false;
+    if (await Permission.bluetoothConnect.isGranted &&
+        await Permission.bluetooth.isGranted &&
+        await Permission.bluetoothScan.isGranted &&
+        await Permission.location.isGranted) {
+      try {
+        final pdfBytes = await pdfBags.save();
+        final pdfPages = await Printing.raster(pdfBytes).toList();
+
+        List<BluetoothDevice> devices = await printer.getBondedDevices();
+        if (devices.isEmpty) {
+          throw Exception('No bonded Bluetooth devices found.');
+        }
+
+        final String printerName =
+            'XP-410B'; // Replace with your printer's name
+        BluetoothDevice? printerDevice = devices.first;
+
+        print('Connecting to printer: ${printerDevice.name}');
+        connected = await printer.connect(printerDevice);
+
+        // TSPL Initialization Command
+        const tsplInitCommand = '~TSPL\n'; // Initialize TSPL mode
+
+        // Send initialization command
+        await printer.writeBytes(Uint8List.fromList(tsplInitCommand.codeUnits));
+
+        for (final page in pdfPages) {
+          final imageBytes = await page.toPng();
+
+          // Send PNG image data to printer (you may need to adjust for TSPL format)
+          await printer.writeBytes(Uint8List.fromList(imageBytes));
+
+         
+        }
+
+        print('Printing completed successfully.');
+      } catch (e) {
+        print('An error occurred during PDF printing: $e');
+      } finally {
+        if (connected) {
+          await printer.disconnect();
+        }
+      }
+    }
+  }
+
+//png
+
+  // Future<void> printBagsPdf() async {
+  //   try {
+  //     // Generate PDF bytes
+  //     final pdfBytes = await pdfBags.save();
+  //     final pdfPages = await Printing.raster(pdfBytes).toList();
+
+  //     // Get the list of bonded Bluetooth devices
+  //     List<BluetoothDevice> devices = await printer.getBondedDevices();
+  //     if (devices.isEmpty) {
+  //       throw Exception('No bonded Bluetooth devices found.');
+  //     }
+
+  //     // Connect to the first printer device
+  //     BluetoothDevice printerDevice =
+  //         devices.firstWhere((device) => device.name == 'XP-410B');
+  //     final ress = await printer.connect(printerDevice).catchError((error) {
+  //       throw Exception('Failed to connect to the printer: $error');
+  //     });
+  //     print(ress);
+
+  //     // Send each page to the printer
+  //     for (final page in pdfPages) {
+  //       try {
+  //         List<int> escPosCommands = [];
+  //         escPosCommands.addAll(utf8.encode('Test Print\n\n'));
+  //         escPosCommands.addAll([0x1b, 0x64, 0x04]);
+  //         await printer.writeBytes(Uint8List.fromList(escPosCommands));
+
+  //         // final imageBytes = await page.toPng();
+  //         // await printer.writeBytes(utf8.encode('Test Print\n\n'));
+  //       } catch (e) {
+  //         print('Error while printing page: $e');
+  //       }
+  //     }
+
+  //     // Disconnect from the printer
+  //     await printer.disconnect().catchError((error) {
+  //       print('Failed to disconnect from the printer: $error');
+  //     });
+
+  //     // Show a confirmation dialog
+  //     print('Printing completed. Please verify the output.');
+  //   } catch (e) {
+  //     // General error handling
+  //     print('An error occurred during PDF printing: $e');
+  //     // Optionally, show a user-friendly message in the UI
+  //   }
+  // }
 
   Future<bool> _showPrintConfirmationDialog() async {
     // Show a dialog asking the user if they printed the document
@@ -161,6 +299,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   var pdf = pw.Document();
   final pdf2 = pw.Document();
   final pdfBags = pw.Document();
+  final printer = BlueThermalPrinter.instance;
+
   // Store the generated PDF file
 
   Customer? _customer;
@@ -187,6 +327,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   @override
   void initState() {
     super.initState();
+      requestBluetoothPermissions();
 
     // Listen for focus changes
     _nameFocusNode.addListener(() {
@@ -1543,7 +1684,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         await generatePdf(
             companyProvider, userProvider, _customer!, _totalSum, pdf2, ress);
         await generateBagsPdf(customer.containers![0], pdfBags, ress, customer);
-        await printPdf(token, ress);
+        // await printPdf(token, ress);
         await printBagsPdf();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1573,9 +1714,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         //     await listBags(token, widget.customer!.id!.toString());
         await generatePdf(companyProvider, userProvider, customer, _totalSum,
             pdf2, widget.customer!.id);
+
+        // await printPdf(token, widget.customer!.id);
         await generateBagsPdf(
-            customer.containers![0], pdfBags, customer.id!, customer);
-        await printPdf(token, widget.customer!.id);
+            customer.containers![0], pdfBags, widget.customer!.id!, customer);
         await printBagsPdf();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

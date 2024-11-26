@@ -6,7 +6,7 @@ import '../sharedPreferences/prefsAuth.dart';
 // const String url = 'http://192.168.95.245:8000';
 
 //moi
-const String url = 'http://192.168.70.200:8000';
+const String url = 'http://192.168.36.183:8000';
 
 Future<bool> login(String username, String password) async {
   try {

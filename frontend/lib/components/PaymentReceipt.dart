@@ -3,7 +3,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:barcode/barcode.dart';
+import 'package:barcode/barcode.dart' ;
+
 
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -407,7 +408,6 @@ Future<File> generatePdf(CompanyProvider companyProvider,
   // Open the PDF using the default viewer
   return file;
 }
-
 Future<void> generateBagsPdf(
     Containers container, pw.Document pdf, int id, Customer customer) async {
   final arabicFont = await _loadArabicFont();
@@ -465,4 +465,6 @@ Future<void> generateBagsPdf(
                           ])))));
         }));
   }
-}
+  }
+
+  
